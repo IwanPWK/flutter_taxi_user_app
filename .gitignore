@@ -45,3 +45,5 @@ app.*.map.json
 
 # Credential
 google-services.json
+map_key.dart
+AndroidManifest.xml

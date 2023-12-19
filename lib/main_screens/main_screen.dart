@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../authentication_screen/login_screen.dart';
-import '../global/global.dart';
+import '../globals/global.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

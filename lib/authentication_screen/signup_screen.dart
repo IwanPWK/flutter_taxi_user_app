@@ -3,7 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '../global/global.dart';
+import '../globals/global.dart';
 import '../splash_screen/splash_screen.dart';
 import '../widgets/progress_dialog.dart';
 import 'login_screen.dart';
