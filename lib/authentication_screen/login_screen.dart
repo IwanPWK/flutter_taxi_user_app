@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -11,7 +12,7 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -50,10 +51,22 @@ class _LoginScreenState extends State<LoginScreen> {
         .user;
 
     if (firebaseUser != null) {
-      currentFirebaseUser = firebaseUser;
-      Fluttertoast.showToast(msg: "Login Successful.");
-      Navigator.push(
-          context, MaterialPageRoute(builder: (c) => const SplashScreen()));
+      DatabaseReference driversRef =
+          FirebaseDatabase.instance.ref().child("users");
+      driversRef.child(firebaseUser.uid).once().then((driverKey) {
+        final snap = driverKey.snapshot;
+        if (snap.value != null) {
+          currentFirebaseUser = firebaseUser;
+          Fluttertoast.showToast(msg: "Login Successful.");
+          Navigator.push(
+              context, MaterialPageRoute(builder: (c) => const SplashScreen()));
+        } else {
+          Fluttertoast.showToast(msg: "No record exist with this email.");
+          fAuth.signOut();
+          Navigator.push(
+              context, MaterialPageRoute(builder: (c) => const SplashScreen()));
+        }
+      });
     } else {
       Navigator.pop(context);
       Fluttertoast.showToast(msg: "Error Occurred during Login.");
@@ -142,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   validateForm();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightGreenAccent,
+                  primary: Colors.lightGreenAccent,
                 ),
                 child: const Text(
                   "Login",
@@ -159,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (c) => const SignUpScreen()));
+                      MaterialPageRoute(builder: (c) => SignUpScreen()));
                 },
               ),
             ],
