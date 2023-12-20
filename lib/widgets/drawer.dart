@@ -25,40 +25,46 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             color: Colors.grey,
             child: DrawerHeader(
               decoration: const BoxDecoration(color: Colors.black),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.person,
-                    size: 80,
-                    color: Colors.grey,
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.name.toString(),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.person,
+                      size: 80,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.name.toString(),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        widget.email.toString(),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
+                        const SizedBox(
+                          height: 10,
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        Text(
+                          widget.email.toString(),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
