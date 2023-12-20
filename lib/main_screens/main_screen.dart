@@ -28,7 +28,7 @@ class _MainScreenState extends State<MainScreen> {
   Position? userCurrentPosition;
   var geoLocator = Geolocator();
 
-  LocationPermission? _locationPermission;
+  // LocationPermission? _locationPermission; //asked permission
   double bottomPaddingOfMap = 0;
 
   blackThemeGoogleMap() {
@@ -197,13 +197,14 @@ class _MainScreenState extends State<MainScreen> {
                 ''');
   }
 
-  checkIfLocationPermissionAllowed() async {
-    _locationPermission = await Geolocator.requestPermission();
+  //asked permission
+  // checkIfLocationPermissionAllowed() async {
+  //   _locationPermission = await Geolocator.requestPermission();
 
-    if (_locationPermission == LocationPermission.denied) {
-      _locationPermission = await Geolocator.requestPermission();
-    }
-  }
+  //   if (_locationPermission == LocationPermission.denied) {
+  //     _locationPermission = await Geolocator.requestPermission();
+  //   }
+  // }
 
   locateUserPosition() async {
     Position cPosition = await Geolocator.getCurrentPosition(
@@ -223,8 +224,9 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-
-    checkIfLocationPermissionAllowed();
+    //asked permission
+    // checkIfLocationPermissionAllowed(); kesalahan dikarenakan memanggil checkIfLocationPermissionAllowed di file main_screen.dart
+    //karena sebagai permission telat untuk meminta permission, karena map sudah terlanjut di load
   }
 
   @override
