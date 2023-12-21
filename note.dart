@@ -19,3 +19,13 @@
 //                     ),
 
 // -----------------------------------------------------------------------------------------
+
+
+//main_screen.dart
+  // @override
+  // void initState() {
+  //   super.initState();
+    //asked permission
+    // checkIfLocationPermissionAllowed(); kesalahan dikarenakan memanggil checkIfLocationPermissionAllowed di file main_screen.dart
+    //karena sebagai permission telat untuk meminta permission, karena map sudah terlanjut di load
+  // }

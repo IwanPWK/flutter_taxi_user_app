@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../assistants/assistant_methods.dart';
 import '../globals/global.dart';
 import '../widgets/drawer.dart';
 
@@ -219,15 +220,20 @@ class _MainScreenState extends State<MainScreen> {
 
     newGoogleMapController!
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
+    String humanReadableAddress =
+        await AssistantMethods.searchAddressFromGeographicCoOrdinates(
+            userCurrentPosition!, context);
+    print("this is your address = " + humanReadableAddress);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    //asked permission
-    // checkIfLocationPermissionAllowed(); kesalahan dikarenakan memanggil checkIfLocationPermissionAllowed di file main_screen.dart
-    //karena sebagai permission telat untuk meminta permission, karena map sudah terlanjut di load
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //asked permission
+  // checkIfLocationPermissionAllowed(); kesalahan dikarenakan memanggil checkIfLocationPermissionAllowed di file main_screen.dart
+  //karena sebagai permission telat untuk meminta permission, karena map sudah terlanjut di load
+  // }
 
   @override
   Widget build(BuildContext context) {
