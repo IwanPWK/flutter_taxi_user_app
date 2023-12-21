@@ -1,9 +1,11 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_taxi_user_app/assistants/request_assistant.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 
 import '../globals/global.dart';
 import '../globals/map_key.dart';
+import '../models/directions.dart';
 import '../models/user_model.dart';
 
 class AssistantMethods {
@@ -18,6 +20,11 @@ class AssistantMethods {
     if (requestResponse != "Error Occurred, Failed. No Response.") {
       humanReadableAddress = requestResponse["results"][0]
           ["formatted_address"]; //key from documentation geocoding api
+
+      Directions userPickUpAddress = Directions();
+      userPickUpAddress.locationLatitude = position.latitude;
+      userPickUpAddress.locationLongitude = position.longitude;
+      userPickUpAddress.locationName = humanReadableAddress;
     }
 
     return humanReadableAddress;
