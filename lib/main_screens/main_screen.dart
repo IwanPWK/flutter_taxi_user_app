@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import '../assistants/assistant_methods.dart';
 import '../globals/global.dart';
+import '../info_handler/app_info.dart';
 import '../widgets/drawer.dart';
 
 class MainScreen extends StatefulWidget {
@@ -316,30 +318,42 @@ class _MainScreenState extends State<MainScreen> {
                   child: Column(
                     children: [
                       //from
-                      const Row(
+                      Stack(
                         children: [
-                          Icon(
-                            Icons.add_location_alt_outlined,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(
-                            width: 12.0,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "From",
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 12),
-                              ),
-                              Text(
-                                "your current location",
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 14),
-                              ),
-                            ],
-                          ),
+                          Row(children: [
+                            const Icon(
+                              Icons.add_location_alt_outlined,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(
+                              width: 12.0,
+                            ),
+                            Expanded(
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                  const Text(
+                                    'From',
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12),
+                                  ),
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Text(
+                                      Provider.of<AppInfo>(context)
+                                                  .userPickUpLocation !=
+                                              null
+                                          ? Provider.of<AppInfo>(context)
+                                              .userPickUpLocation!
+                                              .locationName!
+                                          : "Add pick up",
+                                      style: const TextStyle(
+                                          color: Colors.grey, fontSize: 14),
+                                    ),
+                                  ),
+                                ])),
+                          ]),
                         ],
                       ),
 

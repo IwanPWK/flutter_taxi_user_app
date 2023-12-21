@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../globals/global.dart';
 import '../globals/map_key.dart';
+import '../info_handler/app_info.dart';
 import '../models/directions.dart';
 import '../models/user_model.dart';
 
@@ -25,6 +26,9 @@ class AssistantMethods {
       userPickUpAddress.locationLatitude = position.latitude;
       userPickUpAddress.locationLongitude = position.longitude;
       userPickUpAddress.locationName = humanReadableAddress;
+
+      Provider.of<AppInfo>(context, listen: false)
+          .updatePickUpLocationAddress(userPickUpAddress);
     }
 
     return humanReadableAddress;
