@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+
+import '../assistants/request_assistant.dart';
+import '../globals/map_key.dart';
 
 class SearchPlacesScreen extends StatefulWidget {
   @override
@@ -6,6 +10,40 @@ class SearchPlacesScreen extends StatefulWidget {
 }
 
 class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
+  // List<PredictedPlaces> placesPredictedList = [];
+
+  void findPlaceAutoCompleteSearch(String inputText) async {
+    Position cPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    if (inputText.length > 1) //2 or more than 2 input characters
+    {
+      String urlAutoCompleteSearch =
+          "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$inputText&location=${cPosition.latitude}%2C${cPosition.longitude}&radius=500&key=$mapKey&components=country:ID";
+
+      var responseAutoCompleteSearch =
+          await RequestAssistant.receiveRequest(urlAutoCompleteSearch);
+
+      if (responseAutoCompleteSearch ==
+          "Error Occurred, Failed. No Response.") {
+        return;
+      }
+      print("latitude longitude ${cPosition.latitude}-${cPosition.longitude}");
+      print("this is response/result: ");
+      print(responseAutoCompleteSearch);
+      if (responseAutoCompleteSearch["status"] == "OK") {
+        var placePredictions = responseAutoCompleteSearch["predictions"];
+
+        // var placePredictionsList = (placePredictions as List)
+        //     .map((jsonData) => PredictedPlaces.fromJson(jsonData))
+        //     .toList();
+
+        // setState(() {
+        //   placesPredictedList = placePredictionsList;
+        // });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,7 +111,10 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: TextField(
-                              onChanged: (valueTyped) {},
+                              onChanged: (valueTyped) {
+                                findPlaceAutoCompleteSearch(valueTyped);
+                                print(valueTyped);
+                              },
                               decoration: const InputDecoration(
                                 hintText: "search here...",
                                 fillColor: Colors.white54,
