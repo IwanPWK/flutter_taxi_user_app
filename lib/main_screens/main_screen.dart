@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_taxi_user_app/main_screens/search_places_screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -253,175 +254,187 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          GoogleMap(
-            padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
-            mapType: MapType.normal,
-            myLocationEnabled: true,
-            zoomGesturesEnabled: true,
-            zoomControlsEnabled: true,
-            initialCameraPosition: _kGooglePlex,
-            onMapCreated: (GoogleMapController controller) {
-              _controllerGoogleMap.complete(controller);
-              newGoogleMapController = controller;
+      body: SafeArea(
+        child: Stack(
+          children: [
+            GoogleMap(
+              padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
+              mapType: MapType.normal,
+              myLocationEnabled: true,
+              zoomGesturesEnabled: true,
+              zoomControlsEnabled: true,
+              initialCameraPosition: _kGooglePlex,
+              onMapCreated: (GoogleMapController controller) {
+                _controllerGoogleMap.complete(controller);
+                newGoogleMapController = controller;
 
-              //for black theme google map
-              blackThemeGoogleMap();
+                //for black theme google map
+                blackThemeGoogleMap();
 
-              setState(() {
-                bottomPaddingOfMap = 240;
-              });
+                setState(() {
+                  bottomPaddingOfMap = 240;
+                });
 
-              locateUserPosition();
-            },
-          ),
-
-          //custom hamburger button for drawer
-          Positioned(
-            top: 30,
-            left: 14,
-            child: GestureDetector(
-              onTap: () {
-                sKey.currentState!.openDrawer();
+                locateUserPosition();
               },
-              child: const CircleAvatar(
-                backgroundColor: Colors.grey,
-                child: Icon(
-                  Icons.menu,
-                  color: Colors.black54,
+            ),
+
+            //custom hamburger button for drawer
+            Positioned(
+              top: 30,
+              left: 14,
+              child: GestureDetector(
+                onTap: () {
+                  sKey.currentState!.openDrawer();
+                },
+                child: const CircleAvatar(
+                  backgroundColor: Colors.grey,
+                  child: Icon(
+                    Icons.menu,
+                    color: Colors.black54,
+                  ),
                 ),
               ),
             ),
-          ),
 
-          //ui for searching location
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: AnimatedSize(
-              curve: Curves.easeIn,
-              duration: const Duration(milliseconds: 120),
-              child: Container(
-                height: searchLocationContainerHeight,
-                decoration: const BoxDecoration(
-                  color: Colors.black87,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    topLeft: Radius.circular(20),
+            //ui for searching location
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: AnimatedSize(
+                curve: Curves.easeIn,
+                duration: const Duration(milliseconds: 120),
+                child: Container(
+                  height: searchLocationContainerHeight,
+                  decoration: const BoxDecoration(
+                    color: Colors.black87,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(20),
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                  child: Column(
-                    children: [
-                      //from
-                      Stack(
-                        children: [
-                          Row(children: [
-                            const Icon(
-                              Icons.add_location_alt_outlined,
-                              color: Colors.grey,
-                            ),
-                            const SizedBox(
-                              width: 12.0,
-                            ),
-                            Expanded(
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                  const Text(
-                                    'From',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 18),
+                    child: Column(
+                      children: [
+                        //from
+                        Stack(
+                          children: [
+                            Row(children: [
+                              const Icon(
+                                Icons.add_location_alt_outlined,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(
+                                width: 12.0,
+                              ),
+                              Expanded(
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                    const Text(
+                                      'From',
+                                      style: TextStyle(
+                                          color: Colors.grey, fontSize: 12),
+                                    ),
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Text(
+                                        Provider.of<AppInfo>(context)
+                                                    .userPickUpLocation !=
+                                                null
+                                            ? Provider.of<AppInfo>(context)
+                                                .userPickUpLocation!
+                                                .locationName!
+                                            : "Add pick up",
+                                        style: const TextStyle(
+                                            color: Colors.grey, fontSize: 14),
+                                      ),
+                                    ),
+                                  ])),
+                            ]),
+                          ],
+                        ),
+
+                        const SizedBox(height: 10.0),
+
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: Colors.grey,
+                        ),
+
+                        const SizedBox(height: 16.0),
+
+                        //to
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (c) => SearchPlacesScreen(),
+                              ),
+                            );
+                          },
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.add_location_alt_outlined,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(
+                                width: 12.0,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "To",
                                     style: TextStyle(
                                         color: Colors.grey, fontSize: 12),
                                   ),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Text(
-                                      Provider.of<AppInfo>(context)
-                                                  .userPickUpLocation !=
-                                              null
-                                          ? Provider.of<AppInfo>(context)
-                                              .userPickUpLocation!
-                                              .locationName!
-                                          : "Add pick up",
-                                      style: const TextStyle(
-                                          color: Colors.grey, fontSize: 14),
-                                    ),
+                                  Text(
+                                    "Where to go?",
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 14),
                                   ),
-                                ])),
-                          ]),
-                        ],
-                      ),
-
-                      const SizedBox(height: 10.0),
-
-                      const Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: Colors.grey,
-                      ),
-
-                      const SizedBox(height: 16.0),
-
-                      //to
-                      const Row(
-                        children: [
-                          Icon(
-                            Icons.add_location_alt_outlined,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(
-                            width: 12.0,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "To",
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 12),
-                              ),
-                              Text(
-                                "Where to go?",
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 14),
+                                ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 10.0),
-
-                      const Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: Colors.grey,
-                      ),
-
-                      const SizedBox(height: 16.0),
-
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            textStyle: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
-                        child: const Text(
-                          "Request a Ride",
                         ),
-                      ),
-                    ],
+
+                        const SizedBox(height: 10.0),
+
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: Colors.grey,
+                        ),
+
+                        const SizedBox(height: 16.0),
+
+                        ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              textStyle: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          child: const Text(
+                            "Request a Ride",
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -76,3 +76,59 @@
 //                           ]),
 //                         ],
 //                       ),
+
+
+
+
+
+  // with center widget, it will be in the middle and is not stack each other
+
+//  Column(
+//                   children: [
+//                     Stack(
+//                       children: [
+//                         GestureDetector(
+//                           onTap: () {
+//                             Navigator.pop(context);
+//                           },
+//                           child: const Icon(
+//                             Icons.arrow_back,
+//                             color: Colors.grey,
+//                           ),
+//                         ),
+
+                        // with center widget, it will be in the middle and is not stack each other
+//                         const Center(
+//                           child: Text(
+//                             "Search & Set DropOff Location",
+//                             style: TextStyle(
+//                               fontSize: 18.0,
+//                               color: Colors.grey,
+//                               fontWeight: FontWeight.bold,
+//                             ),
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+
+
+
+
+// search_places_screen.dart
+// with expanded widget you can force widget to fill available space
+
+  // Expanded(
+  //                         child: Padding(
+  //                           padding: const EdgeInsets.all(8.0),
+  //                           child: TextField(
+  //                             onChanged: (valueTyped) {
+  //                             },
+  //                             decoration: const InputDecoration(
+  //                               hintText: "search here...",
+  //                               fillColor: Colors.white54,
+  //                               filled: true,
+  //                               border: InputBorder.none,
+  //                               contentPadding: EdgeInsets.only(
+  //                                 left: 11.0,
+  //                                 top: 8.0,
+  //                                 bottom: 8.0,
