@@ -20,11 +20,9 @@ class PlacePredictionTileDesign extends StatelessWidget {
       ),
     );
 
-    String placeDirectionDetailsUrl =
-        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$mapKey";
+    String placeDirectionDetailsUrl = "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$mapKey";
 
-    var responseApi =
-        await RequestAssistant.receiveRequest(placeDirectionDetailsUrl);
+    var responseApi = await RequestAssistant.receiveRequest(placeDirectionDetailsUrl);
 
     Navigator.pop(context);
 
@@ -36,10 +34,8 @@ class PlacePredictionTileDesign extends StatelessWidget {
       Directions directions = Directions();
       directions.locationName = responseApi["result"]["name"];
       directions.locationId = placeId;
-      directions.locationLatitude =
-          responseApi["result"]["geometry"]["location"]["lat"];
-      directions.locationLongitude =
-          responseApi["result"]["geometry"]["location"]["lng"];
+      directions.locationLatitude = responseApi["result"]["geometry"]["location"]["lat"];
+      directions.locationLongitude = responseApi["result"]["geometry"]["location"]["lng"];
 
       // print('Location Name = ${directions.locationName!}');
       // print('Location Id = ${directions.locationId!}');
@@ -47,8 +43,7 @@ class PlacePredictionTileDesign extends StatelessWidget {
       // print('Location Longitude = ${directions.locationLongitude.toString()}');
 
       // have commited before
-      Provider.of<AppInfo>(context, listen: false)
-          .updateDropOffLocationAddress(directions);
+      Provider.of<AppInfo>(context, listen: false).updateDropOffLocationAddress(directions);
 
       // have commited before
       Navigator.pop(context, "obtainedDropoff");
@@ -59,7 +54,7 @@ class PlacePredictionTileDesign extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        getPlaceDirectionDetails(predictedPlaces!.place_id, context);
+        getPlaceDirectionDetails(predictedPlaces!.placeId, context);
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white24,
@@ -83,7 +78,7 @@ class PlacePredictionTileDesign extends StatelessWidget {
                     height: 8.0,
                   ),
                   Text(
-                    predictedPlaces!.main_text!,
+                    predictedPlaces!.mainText!,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 16.0,
@@ -94,7 +89,7 @@ class PlacePredictionTileDesign extends StatelessWidget {
                     height: 2.0,
                   ),
                   Text(
-                    predictedPlaces!.secondary_text!,
+                    predictedPlaces!.secondaryText!,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 12.0,

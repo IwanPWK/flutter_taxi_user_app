@@ -9,6 +9,7 @@ import '../assistants/assistant_methods.dart';
 import '../globals/global.dart';
 import '../info_handler/app_info.dart';
 import '../widgets/drawer.dart';
+import '../widgets/progress_dialog.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -211,22 +212,16 @@ class _MainScreenState extends State<MainScreen> {
   // }
 
   locateUserPosition() async {
-    Position cPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     userCurrentPosition = cPosition;
 
-    LatLng latLngPosition =
-        LatLng(userCurrentPosition!.latitude, userCurrentPosition!.longitude);
+    LatLng latLngPosition = LatLng(userCurrentPosition!.latitude, userCurrentPosition!.longitude);
 
-    CameraPosition cameraPosition =
-        CameraPosition(target: latLngPosition, zoom: 14);
+    CameraPosition cameraPosition = CameraPosition(target: latLngPosition, zoom: 14);
 
-    newGoogleMapController!
-        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
-    String humanReadableAddress =
-        await AssistantMethods.searchAddressFromGeographicCoOrdinates(
-            userCurrentPosition!, context);
+    String humanReadableAddress = await AssistantMethods.searchAddressFromGeographicCoOrdinates(userCurrentPosition!, context);
     print("this is your address = " + humanReadableAddress);
   }
 
@@ -315,8 +310,7 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 18),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
                     child: Column(
                       children: [
                         //from
@@ -331,30 +325,21 @@ class _MainScreenState extends State<MainScreen> {
                                 width: 12.0,
                               ),
                               Expanded(
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                    const Text(
-                                      'From',
-                                      style: TextStyle(
-                                          color: Colors.grey, fontSize: 12),
-                                    ),
-                                    SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Text(
-                                        Provider.of<AppInfo>(context)
-                                                    .userPickUpLocation !=
-                                                null
-                                            ? Provider.of<AppInfo>(context)
-                                                .userPickUpLocation!
-                                                .locationName!
-                                            : "Add pick up",
-                                        style: const TextStyle(
-                                            color: Colors.grey, fontSize: 14),
-                                      ),
-                                    ),
-                                  ])),
+                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                const Text(
+                                  'From',
+                                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                                ),
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Text(
+                                    Provider.of<AppInfo>(context).userPickUpLocation != null
+                                        ? Provider.of<AppInfo>(context).userPickUpLocation!.locationName!
+                                        : "Add pick up",
+                                    style: const TextStyle(color: Colors.grey, fontSize: 14),
+                                  ),
+                                ),
+                              ])),
                             ]),
                           ],
                         ),
@@ -371,17 +356,14 @@ class _MainScreenState extends State<MainScreen> {
 
                         //to
                         GestureDetector(
-                          onTap: () {
+                          onTap: () async {
                             //go to search places screen
 
-                            var responseFromSearchScreen = Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (c) => SearchPlacesScreen()));
+                            var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c) => SearchPlacesScreen()));
 
-                            if (responseFromSearchScreen as String ==
-                                "obtainedDropoff") {
+                            if (responseFromSearchScreen as String == "obtainedDropoff") {
                               //draw routes - draw polyline
+                              await drawPolyLineFromOriginToDestination();
                             }
                           },
                           child: Stack(
@@ -397,26 +379,18 @@ class _MainScreenState extends State<MainScreen> {
                                   ),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         const Text(
                                           "To",
-                                          style: TextStyle(
-                                              color: Colors.grey, fontSize: 12),
+                                          style: TextStyle(color: Colors.grey, fontSize: 12),
                                         ),
                                         SingleChildScrollView(
                                           child: Text(
-                                            Provider.of<AppInfo>(context)
-                                                        .userDropOffLocation !=
-                                                    null
-                                                ? Provider.of<AppInfo>(context)
-                                                    .userDropOffLocation!
-                                                    .locationName!
+                                            Provider.of<AppInfo>(context).userDropOffLocation != null
+                                                ? Provider.of<AppInfo>(context).userDropOffLocation!.locationName!
                                                 : "Where to go?",
-                                            style: const TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 14),
+                                            style: const TextStyle(color: Colors.grey, fontSize: 14),
                                           ),
                                         ),
                                       ],
@@ -439,11 +413,11 @@ class _MainScreenState extends State<MainScreen> {
                         const SizedBox(height: 16.0),
 
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            drawPolyLineFromOriginToDestination();
+                          },
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              textStyle: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                              backgroundColor: Colors.green, textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                           child: const Text(
                             "Request a Ride",
                           ),
@@ -458,5 +432,27 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> drawPolyLineFromOriginToDestination() async {
+    var originPosition = Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
+    var destinationPosition = Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
+
+    var originLatLng = LatLng(originPosition!.locationLatitude!, originPosition.locationLongitude!);
+    var destinationLatLng = LatLng(destinationPosition!.locationLatitude!, destinationPosition.locationLongitude!);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => const ProgressDialog(
+        message: "Please wait...",
+      ),
+    );
+
+    var directionDetailsInfo = await AssistantMethods.obtainOriginToDestinationDirectionDetails(originLatLng, destinationLatLng);
+
+    Navigator.pop(context);
+
+    print("These are points = ");
+    print(directionDetailsInfo!.ePoints);
   }
 }
