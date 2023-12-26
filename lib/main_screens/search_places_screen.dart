@@ -3,6 +3,8 @@ import 'package:geolocator/geolocator.dart';
 
 import '../assistants/request_assistant.dart';
 import '../globals/map_key.dart';
+import '../models/predicted_places.dart';
+import '../widgets/place_prediction_tile.dart';
 
 class SearchPlacesScreen extends StatefulWidget {
   @override
@@ -10,7 +12,7 @@ class SearchPlacesScreen extends StatefulWidget {
 }
 
 class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
-  // List<PredictedPlaces> placesPredictedList = [];
+  List<PredictedPlaces> placesPredictedList = [];
 
   void findPlaceAutoCompleteSearch(String inputText) async {
     Position cPosition = await Geolocator.getCurrentPosition(
@@ -27,19 +29,19 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
           "Error Occurred, Failed. No Response.") {
         return;
       }
-      print("latitude longitude ${cPosition.latitude}-${cPosition.longitude}");
-      print("this is response/result: ");
-      print(responseAutoCompleteSearch);
+      // print("latitude longitude ${cPosition.latitude}-${cPosition.longitude}");
+      // print("this is response/result: ");
+      // print(responseAutoCompleteSearch);
       if (responseAutoCompleteSearch["status"] == "OK") {
         var placePredictions = responseAutoCompleteSearch["predictions"];
 
-        // var placePredictionsList = (placePredictions as List)
-        //     .map((jsonData) => PredictedPlaces.fromJson(jsonData))
-        //     .toList();
+        var placePredictionsList = (placePredictions as List)
+            .map((jsonData) => PredictedPlaces.fromJson(jsonData))
+            .toList();
 
-        // setState(() {
-        //   placesPredictedList = placePredictionsList;
-        // });
+        setState(() {
+          placesPredictedList = placePredictionsList;
+        });
       }
     }
   }
@@ -136,7 +138,27 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
               ),
             ),
 
-            Container(),
+            //display place predictions result
+            (placesPredictedList.isNotEmpty)
+                ? Expanded(
+                    child: ListView.separated(
+                      itemCount: placesPredictedList.length,
+                      physics: const ClampingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return PlacePredictionTileDesign(
+                          predictedPlaces: placesPredictedList[index],
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const Divider(
+                          height: 1,
+                          color: Colors.white,
+                          thickness: 1,
+                        );
+                      },
+                    ),
+                  )
+                : Container(),
           ],
         ),
       ),
