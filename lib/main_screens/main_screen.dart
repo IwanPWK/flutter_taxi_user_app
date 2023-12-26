@@ -372,34 +372,55 @@ class _MainScreenState extends State<MainScreen> {
                         //to
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (c) => SearchPlacesScreen(),
-                              ),
-                            );
+                            //go to search places screen
+
+                            var responseFromSearchScreen = Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (c) => SearchPlacesScreen()));
+
+                            if (responseFromSearchScreen as String ==
+                                "obtainedDropoff") {
+                              //draw routes - draw polyline
+                            }
                           },
-                          child: const Row(
+                          child: Stack(
                             children: [
-                              Icon(
-                                Icons.add_location_alt_outlined,
-                                color: Colors.grey,
-                              ),
-                              SizedBox(
-                                width: 12.0,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              Row(
                                 children: [
-                                  Text(
-                                    "To",
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 12),
+                                  const Icon(
+                                    Icons.add_location_alt_outlined,
+                                    color: Colors.grey,
                                   ),
-                                  Text(
-                                    "Where to go?",
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 14),
+                                  const SizedBox(
+                                    width: 12.0,
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          "To",
+                                          style: TextStyle(
+                                              color: Colors.grey, fontSize: 12),
+                                        ),
+                                        SingleChildScrollView(
+                                          child: Text(
+                                            Provider.of<AppInfo>(context)
+                                                        .userDropOffLocation !=
+                                                    null
+                                                ? Provider.of<AppInfo>(context)
+                                                    .userDropOffLocation!
+                                                    .locationName!
+                                                : "Where to go?",
+                                            style: const TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 14),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),

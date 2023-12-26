@@ -41,14 +41,16 @@ class PlacePredictionTileDesign extends StatelessWidget {
       directions.locationLongitude =
           responseApi["result"]["geometry"]["location"]["lng"];
 
-      print('Location Name = ${directions.locationName!}');
-      print('Location Id = ${directions.locationId!}');
-      print('Location Latitude = ${directions.locationLatitude.toString()}');
-      print('Location Longitude = ${directions.locationLongitude.toString()}');
+      // print('Location Name = ${directions.locationName!}');
+      // print('Location Id = ${directions.locationId!}');
+      // print('Location Latitude = ${directions.locationLatitude.toString()}');
+      // print('Location Longitude = ${directions.locationLongitude.toString()}');
 
-      // Provider.of<AppInfo>(context, listen: false)
-      //     .updateDropOffLocationAddress(directions);
+      // have commited before
+      Provider.of<AppInfo>(context, listen: false)
+          .updateDropOffLocationAddress(directions);
 
+      // have commited before
       Navigator.pop(context, "obtainedDropoff");
     }
   }
