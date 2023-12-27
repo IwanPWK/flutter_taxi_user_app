@@ -277,212 +277,247 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: sKey,
-      drawer: SizedBox(
-        width: 265,
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            canvasColor: Colors.black,
-          ),
-          child: DrawerWidget(
-            name: userName,
-            email: userEmail,
+    return WillPopScope(
+      onWillPop: () async {
+        if (!openNavigationDrawer) {
+          openNavigationDrawer = true;
+          Provider.of<AppInfo>(context, listen: false).clearDropOffLocation();
+          return false;
+        } else {
+          final shouldPop = await showDialog<bool>(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Do you want to exit and logout?'),
+                actionsAlignment: MainAxisAlignment.spaceBetween,
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      fAuth.signOut();
+                      Navigator.pop(context, true);
+                    },
+                    child: const Text('Yes'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                    child: const Text('No'),
+                  ),
+                ],
+              );
+            },
+          );
+          return shouldPop!;
+        }
+      },
+      child: Scaffold(
+        key: sKey,
+        drawer: SizedBox(
+          width: 265,
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              canvasColor: Colors.black,
+            ),
+            child: DrawerWidget(
+              name: userName,
+              email: userEmail,
+            ),
           ),
         ),
-      ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            GoogleMap(
-              padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
-              mapType: MapType.normal,
-              myLocationEnabled: true,
-              zoomGesturesEnabled: true,
-              zoomControlsEnabled: true,
-              initialCameraPosition: _kGooglePlex,
-              polylines: Provider.of<AppInfo>(context).userDropOffLocation != null ? polyLineSet : <Polyline>{},
-              markers: Provider.of<AppInfo>(context).userDropOffLocation != null ? markersSet : <Marker>{},
-              circles: Provider.of<AppInfo>(context).userDropOffLocation != null ? circlesSet : <Circle>{},
-              onMapCreated: (GoogleMapController controller) {
-                _controllerGoogleMap.complete(controller);
-                newGoogleMapController = controller;
+        body: SafeArea(
+          child: Stack(
+            children: [
+              GoogleMap(
+                padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
+                mapType: MapType.normal,
+                myLocationEnabled: true,
+                zoomGesturesEnabled: true,
+                zoomControlsEnabled: true,
+                initialCameraPosition: _kGooglePlex,
+                polylines: Provider.of<AppInfo>(context).userDropOffLocation != null ? polyLineSet : <Polyline>{},
+                markers: Provider.of<AppInfo>(context).userDropOffLocation != null ? markersSet : <Marker>{},
+                circles: Provider.of<AppInfo>(context).userDropOffLocation != null ? circlesSet : <Circle>{},
+                onMapCreated: (GoogleMapController controller) {
+                  _controllerGoogleMap.complete(controller);
+                  newGoogleMapController = controller;
 
-                //for black theme google map
-                blackThemeGoogleMap();
+                  //for black theme google map
+                  blackThemeGoogleMap();
 
-                setState(() {
-                  bottomPaddingOfMap = 240;
-                });
+                  setState(() {
+                    bottomPaddingOfMap = 240;
+                  });
 
-                locateUserPosition();
-              },
-            ),
-
-            //custom hamburger button for drawer
-            Positioned(
-              top: 30,
-              left: 14,
-              child: GestureDetector(
-                onTap: () {
-                  if (openNavigationDrawer) {
-                    sKey.currentState!.openDrawer();
-                  } else {
-                    // restart-refresh-minimize app programatically
-                    // SystemNavigator.pop();
-                    openNavigationDrawer = true;
-                    Provider.of<AppInfo>(context, listen: false).clearDropOffLocation();
-                  }
+                  locateUserPosition();
                 },
-                child: CircleAvatar(
-                  backgroundColor: Colors.grey,
-                  child: Icon(
-                    openNavigationDrawer ? Icons.menu : Icons.close,
-                    color: Colors.black54,
+              ),
+
+              //custom hamburger button for drawer
+              Positioned(
+                top: 30,
+                left: 14,
+                child: GestureDetector(
+                  onTap: () {
+                    if (openNavigationDrawer) {
+                      sKey.currentState!.openDrawer();
+                    } else {
+                      // restart-refresh-minimize app programatically
+                      // SystemNavigator.pop();
+                      openNavigationDrawer = true;
+                      Provider.of<AppInfo>(context, listen: false).clearDropOffLocation();
+                    }
+                  },
+                  child: CircleAvatar(
+                    backgroundColor: Colors.grey,
+                    child: Icon(
+                      openNavigationDrawer ? Icons.menu : Icons.close,
+                      color: Colors.black54,
+                    ),
                   ),
                 ),
               ),
-            ),
 
-            //ui for searching location
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: AnimatedSize(
-                curve: Curves.easeIn,
-                duration: const Duration(milliseconds: 120),
-                child: Container(
-                  height: searchLocationContainerHeight,
-                  decoration: const BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(20),
-                      topLeft: Radius.circular(20),
+              //ui for searching location
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: AnimatedSize(
+                  curve: Curves.easeIn,
+                  duration: const Duration(milliseconds: 120),
+                  child: Container(
+                    height: searchLocationContainerHeight,
+                    decoration: const BoxDecoration(
+                      color: Colors.black87,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        topLeft: Radius.circular(20),
+                      ),
                     ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                    child: Column(
-                      children: [
-                        //from
-                        Stack(
-                          children: [
-                            Row(children: [
-                              const Icon(
-                                Icons.add_location_alt_outlined,
-                                color: Colors.grey,
-                              ),
-                              const SizedBox(
-                                width: 12.0,
-                              ),
-                              Expanded(
-                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                const Text(
-                                  'From',
-                                  style: TextStyle(color: Colors.grey, fontSize: 12),
-                                ),
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Text(
-                                    Provider.of<AppInfo>(context).userPickUpLocation != null
-                                        ? Provider.of<AppInfo>(context).userPickUpLocation!.locationName!
-                                        : "Add pick up",
-                                    style: const TextStyle(color: Colors.grey, fontSize: 14),
-                                  ),
-                                ),
-                              ])),
-                            ]),
-                          ],
-                        ),
-
-                        const SizedBox(height: 10.0),
-
-                        const Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: Colors.grey,
-                        ),
-
-                        const SizedBox(height: 16.0),
-
-                        //to
-                        GestureDetector(
-                          onTap: () async {
-                            //go to search places screen
-
-                            var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c) => SearchPlacesScreen()));
-
-                            setState(() {
-                              openNavigationDrawer = false;
-                            });
-
-                            if (responseFromSearchScreen as String == "obtainedDropoff") {
-                              //draw routes - draw polyline
-                              await drawPolyLineFromOriginToDestination();
-                            }
-                          },
-                          child: Stack(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                      child: Column(
+                        children: [
+                          //from
+                          Stack(
                             children: [
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.add_location_alt_outlined,
-                                    color: Colors.grey,
+                              Row(children: [
+                                const Icon(
+                                  Icons.add_location_alt_outlined,
+                                  color: Colors.grey,
+                                ),
+                                const SizedBox(
+                                  width: 12.0,
+                                ),
+                                Expanded(
+                                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                  const Text(
+                                    'From',
+                                    style: TextStyle(color: Colors.grey, fontSize: 12),
                                   ),
-                                  const SizedBox(
-                                    width: 12.0,
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          "To",
-                                          style: TextStyle(color: Colors.grey, fontSize: 12),
-                                        ),
-                                        SingleChildScrollView(
-                                          child: Text(
-                                            Provider.of<AppInfo>(context).userDropOffLocation != null
-                                                ? Provider.of<AppInfo>(context).userDropOffLocation!.locationName!
-                                                : "Where to go?",
-                                            style: const TextStyle(color: Colors.grey, fontSize: 14),
-                                          ),
-                                        ),
-                                      ],
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Text(
+                                      Provider.of<AppInfo>(context).userPickUpLocation != null
+                                          ? Provider.of<AppInfo>(context).userPickUpLocation!.locationName!
+                                          : "Add pick up",
+                                      style: const TextStyle(color: Colors.grey, fontSize: 14),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ])),
+                              ]),
                             ],
                           ),
-                        ),
 
-                        const SizedBox(height: 10.0),
+                          const SizedBox(height: 10.0),
 
-                        const Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: Colors.grey,
-                        ),
-
-                        const SizedBox(height: 16.0),
-
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green, textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                          child: const Text(
-                            "Request a Ride",
+                          const Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: Colors.grey,
                           ),
-                        ),
-                      ],
+
+                          const SizedBox(height: 16.0),
+
+                          //to
+                          GestureDetector(
+                            onTap: () async {
+                              //go to search places screen
+
+                              var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c) => SearchPlacesScreen()));
+
+                              setState(() {
+                                openNavigationDrawer = false;
+                              });
+
+                              if (responseFromSearchScreen as String == "obtainedDropoff") {
+                                //draw routes - draw polyline
+                                await drawPolyLineFromOriginToDestination();
+                              }
+                            },
+                            child: Stack(
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.add_location_alt_outlined,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(
+                                      width: 12.0,
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            "To",
+                                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                                          ),
+                                          SingleChildScrollView(
+                                            child: Text(
+                                              Provider.of<AppInfo>(context).userDropOffLocation != null
+                                                  ? Provider.of<AppInfo>(context).userDropOffLocation!.locationName!
+                                                  : "Where to go?",
+                                              style: const TextStyle(color: Colors.grey, fontSize: 14),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 10.0),
+
+                          const Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: Colors.grey,
+                          ),
+
+                          const SizedBox(height: 16.0),
+
+                          ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green, textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            child: const Text(
+                              "Request a Ride",
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
