@@ -38,9 +38,6 @@ class _SplashScreenState extends State<SplashScreen> {
       fAuth.signOut();
       showDialogBox();
       setState(() => isAlertSet = true);
-      if (!isAlertSet) {
-        checkIfNetworkIsAvailable();
-      }
     } else {
       startTimer();
     }
@@ -91,6 +88,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   showDialogBox();
                   setState(() => isAlertSet = true);
                 }
+                checkIfNetworkIsAvailable();
               },
               child: const Text('OK'),
             ),
