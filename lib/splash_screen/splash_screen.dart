@@ -17,7 +17,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  late StreamSubscription listener;
   bool isDeviceConnected = false;
   bool isAlertSet = false;
 
@@ -26,9 +25,9 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(const Duration(seconds: 3), () async {
       if (fAuth.currentUser != null) {
         currentFirebaseUser = fAuth.currentUser;
-        Navigator.push(context, MaterialPageRoute(builder: (c) => const MainScreen()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => const MainScreen()));
       } else {
-        Navigator.push(context, MaterialPageRoute(builder: (c) => const LoginScreen()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => const LoginScreen()));
       }
     });
   }
@@ -44,12 +43,6 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     } else {
       startTimer();
-      listener = InternetConnection().onStatusChange.listen((InternetStatus status) {
-        if (status == InternetStatus.disconnected && isAlertSet == false) {
-          showDialogBox();
-          setState(() => isAlertSet = true);
-        }
-      });
     }
   }
 
@@ -57,12 +50,6 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     checkIfNetworkIsAvailable();
-  }
-
-  @override
-  void dispose() {
-    listener.cancel();
-    super.dispose();
   }
 
   @override

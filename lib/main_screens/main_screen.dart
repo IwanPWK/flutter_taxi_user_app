@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_taxi_user_app/main_screens/search_places_screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
 import '../assistants/assistant_methods.dart';
 import '../globals/global.dart';
@@ -20,6 +23,9 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  late StreamSubscription listener;
+  bool isDeviceConnected = false;
+  bool isAlertSet = false;
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
   GoogleMapController? newGoogleMapController;
 
@@ -45,6 +51,8 @@ class _MainScreenState extends State<MainScreen> {
 
   String userName = "your Name";
   String userEmail = "your Email";
+
+  bool openNavigationDrawer = true;
 
   blackThemeGoogleMap() {
     newGoogleMapController!.setMapStyle('''
@@ -238,6 +246,27 @@ class _MainScreenState extends State<MainScreen> {
     userEmail = userModelCurrentInfo!.email!;
   }
 
+  Future<void> checkIfNetworkIsAvailable() async {
+    listener = InternetConnection().onStatusChange.listen((InternetStatus status) {
+      if (status == InternetStatus.disconnected && isAlertSet == false) {
+        showDialogBox();
+        setState(() => isAlertSet = true);
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    checkIfNetworkIsAvailable();
+    super.initState();
+  }
+
+  @override
+  dispose() {
+    listener.cancel();
+    super.dispose();
+  }
+
   // @override
   // void initState() {
   //   super.initState();
@@ -272,9 +301,9 @@ class _MainScreenState extends State<MainScreen> {
               zoomGesturesEnabled: true,
               zoomControlsEnabled: true,
               initialCameraPosition: _kGooglePlex,
-              polylines: polyLineSet,
-              markers: markersSet,
-              circles: circlesSet,
+              polylines: Provider.of<AppInfo>(context).userDropOffLocation != null ? polyLineSet : <Polyline>{},
+              markers: Provider.of<AppInfo>(context).userDropOffLocation != null ? markersSet : <Marker>{},
+              circles: Provider.of<AppInfo>(context).userDropOffLocation != null ? circlesSet : <Circle>{},
               onMapCreated: (GoogleMapController controller) {
                 _controllerGoogleMap.complete(controller);
                 newGoogleMapController = controller;
@@ -296,12 +325,19 @@ class _MainScreenState extends State<MainScreen> {
               left: 14,
               child: GestureDetector(
                 onTap: () {
-                  sKey.currentState!.openDrawer();
+                  if (openNavigationDrawer) {
+                    sKey.currentState!.openDrawer();
+                  } else {
+                    // restart-refresh-minimize app programatically
+                    // SystemNavigator.pop();
+                    openNavigationDrawer = true;
+                    Provider.of<AppInfo>(context, listen: false).clearDropOffLocation();
+                  }
                 },
-                child: const CircleAvatar(
+                child: CircleAvatar(
                   backgroundColor: Colors.grey,
                   child: Icon(
-                    Icons.menu,
+                    openNavigationDrawer ? Icons.menu : Icons.close,
                     color: Colors.black54,
                   ),
                 ),
@@ -377,6 +413,10 @@ class _MainScreenState extends State<MainScreen> {
 
                             var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c) => SearchPlacesScreen()));
 
+                            setState(() {
+                              openNavigationDrawer = false;
+                            });
+
                             if (responseFromSearchScreen as String == "obtainedDropoff") {
                               //draw routes - draw polyline
                               await drawPolyLineFromOriginToDestination();
@@ -429,9 +469,7 @@ class _MainScreenState extends State<MainScreen> {
                         const SizedBox(height: 16.0),
 
                         ElevatedButton(
-                          onPressed: () {
-                            drawPolyLineFromOriginToDestination();
-                          },
+                          onPressed: () {},
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green, textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                           child: const Text(
@@ -560,4 +598,26 @@ class _MainScreenState extends State<MainScreen> {
       circlesSet.add(destinationCircle);
     });
   }
+
+  showDialogBox() => showCupertinoDialog<String>(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: const Text('No Connection'),
+          content: const Text('Please check your internet connectivity'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context, 'Cancel');
+                setState(() => isAlertSet = false);
+                isDeviceConnected = await InternetConnection().hasInternetAccess;
+                if (!isDeviceConnected && isAlertSet == false) {
+                  showDialogBox();
+                  setState(() => isAlertSet = true);
+                }
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
 }

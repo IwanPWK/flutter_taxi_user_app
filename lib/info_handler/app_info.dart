@@ -13,4 +13,10 @@ class AppInfo extends ChangeNotifier {
     userDropOffLocation = dropOffAddress;
     notifyListeners();
   }
+
+  // Mengosongkan nilai userDropOffLocation
+  void clearDropOffLocation() {
+    userDropOffLocation = null;
+    notifyListeners();
+  }
 }
