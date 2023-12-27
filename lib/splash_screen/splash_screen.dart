@@ -1,5 +1,8 @@
 import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 import '../assistants/assistant_methods.dart';
 import '../authentication_screen/login_screen.dart';
@@ -14,27 +17,52 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  late StreamSubscription listener;
+  bool isDeviceConnected = false;
+  bool isAlertSet = false;
+
   startTimer() {
-    fAuth.currentUser != null
-        ? AssistantMethods.readCurrentOnlineUserInfo()
-        : null;
+    fAuth.currentUser != null ? AssistantMethods.readCurrentOnlineUserInfo() : null;
     Timer(const Duration(seconds: 3), () async {
       if (fAuth.currentUser != null) {
         currentFirebaseUser = fAuth.currentUser;
-        Navigator.push(
-            context, MaterialPageRoute(builder: (c) => const MainScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (c) => const MainScreen()));
       } else {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (c) => const LoginScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (c) => const LoginScreen()));
       }
     });
+  }
+
+  Future<void> checkIfNetworkIsAvailable() async {
+    isDeviceConnected = await InternetConnection().hasInternetAccess;
+    if (!isDeviceConnected) {
+      fAuth.signOut();
+      showDialogBox();
+      setState(() => isAlertSet = true);
+      if (!isAlertSet) {
+        checkIfNetworkIsAvailable();
+      }
+    } else {
+      startTimer();
+      listener = InternetConnection().onStatusChange.listen((InternetStatus status) {
+        if (status == InternetStatus.disconnected && isAlertSet == false) {
+          showDialogBox();
+          setState(() => isAlertSet = true);
+        }
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    checkIfNetworkIsAvailable();
+  }
 
-    startTimer();
+  @override
+  void dispose() {
+    listener.cancel();
+    super.dispose();
   }
 
   @override
@@ -52,10 +80,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               const Text(
                 "Uber & inDriver Clone App",
-                style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -63,4 +88,26 @@ class _SplashScreenState extends State<SplashScreen> {
       ),
     );
   }
+
+  showDialogBox() => showCupertinoDialog<String>(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: const Text('No Connection'),
+          content: const Text('Please check your internet connectivity'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context, 'Cancel');
+                setState(() => isAlertSet = false);
+                isDeviceConnected = await InternetConnection().hasInternetAccess;
+                if (!isDeviceConnected && isAlertSet == false) {
+                  showDialogBox();
+                  setState(() => isAlertSet = true);
+                }
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
 }

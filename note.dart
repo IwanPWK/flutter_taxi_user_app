@@ -30,6 +30,8 @@
     //karena sebagai permission telat untuk meminta permission, karena map sudah terlanjut di load
   // }
 
+ // you can create polylines dynamic, with point dorpoff to current location (dynamic)
+
 
 
 // how to use singlechildscrollview

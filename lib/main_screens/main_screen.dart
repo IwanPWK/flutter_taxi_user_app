@@ -43,6 +43,9 @@ class _MainScreenState extends State<MainScreen> {
   Set<Marker> markersSet = {};
   Set<Circle> circlesSet = {};
 
+  String userName = "your Name";
+  String userEmail = "your Email";
+
   blackThemeGoogleMap() {
     newGoogleMapController!.setMapStyle('''
                     [
@@ -230,6 +233,9 @@ class _MainScreenState extends State<MainScreen> {
 
     String humanReadableAddress = await AssistantMethods.searchAddressFromGeographicCoOrdinates(userCurrentPosition!, context);
     print("this is your address = " + humanReadableAddress);
+
+    userName = userModelCurrentInfo!.name!;
+    userEmail = userModelCurrentInfo!.email!;
   }
 
   // @override
@@ -251,8 +257,8 @@ class _MainScreenState extends State<MainScreen> {
             canvasColor: Colors.black,
           ),
           child: DrawerWidget(
-            name: userModelCurrentInfo!.name,
-            email: userModelCurrentInfo!.email,
+            name: userName,
+            email: userEmail,
           ),
         ),
       ),
