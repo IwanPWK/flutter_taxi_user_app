@@ -1,34 +1,29 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:flutter_taxi_user_app/main_screens/search_places_screen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
-import '../assistants/assistant_methods.dart';
-import '../assistants/geofire_assistant.dart';
-import '../globals/global.dart';
-import '../info_handler/app_info.dart';
-import '../models/active_nearby_available_drivers.dart';
-import '../widgets/drawer.dart';
-import '../widgets/progress_dialog.dart';
+import 'package:flutter_taxi_user_app/assistants/assistant_methods.dart';
+import 'package:flutter_taxi_user_app/assistants/geofire_assistant.dart';
+import 'package:flutter_taxi_user_app/authentication_screen/login_screen.dart';
+import 'package:flutter_taxi_user_app/globals/global.dart';
+import 'package:flutter_taxi_user_app/info_handler/app_info.dart';
+import 'package:flutter_taxi_user_app/main_screens/search_places_screen.dart';
+import 'package:flutter_taxi_user_app/models/active_nearby_available_drivers.dart';
+import 'package:flutter_taxi_user_app/widgets/drawer.dart';
+import 'package:flutter_taxi_user_app/widgets/progress_dialog.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
-
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  _MainScreenState createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  late StreamSubscription listener;
-  bool isDeviceConnected = false;
-  bool isAlertSet = false;
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
   GoogleMapController? newGoogleMapController;
 
@@ -43,7 +38,7 @@ class _MainScreenState extends State<MainScreen> {
   Position? userCurrentPosition;
   var geoLocator = Geolocator();
 
-  // LocationPermission? _locationPermission; //asked permission
+  LocationPermission? _locationPermission;
   double bottomPaddingOfMap = 0;
 
   List<LatLng> pLineCoOrdinatesList = [];
@@ -58,7 +53,6 @@ class _MainScreenState extends State<MainScreen> {
   bool openNavigationDrawer = true;
 
   bool activeNearbyDriverKeysLoaded = false;
-
   BitmapDescriptor? activeNearbyIcon;
 
   blackThemeGoogleMap() {
@@ -227,14 +221,13 @@ class _MainScreenState extends State<MainScreen> {
                 ''');
   }
 
-  //asked permission
-  // checkIfLocationPermissionAllowed() async {
-  //   _locationPermission = await Geolocator.requestPermission();
+  checkIfLocationPermissionAllowed() async {
+    _locationPermission = await Geolocator.requestPermission();
 
-  //   if (_locationPermission == LocationPermission.denied) {
-  //     _locationPermission = await Geolocator.requestPermission();
-  //   }
-  // }
+    if (_locationPermission == LocationPermission.denied) {
+      _locationPermission = await Geolocator.requestPermission();
+    }
+  }
 
   locateUserPosition() async {
     Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
@@ -255,290 +248,207 @@ class _MainScreenState extends State<MainScreen> {
     initializeGeoFireListener();
   }
 
-  Future<void> checkIfNetworkIsAvailable() async {
-    listener = InternetConnection().onStatusChange.listen((InternetStatus status) {
-      if (status == InternetStatus.disconnected && isAlertSet == false) {
-        showDialogBox();
-        setState(() => isAlertSet = true);
-      }
-    });
-  }
-
   @override
   void initState() {
-    checkIfNetworkIsAvailable();
-
     super.initState();
-  }
 
-  @override
-  dispose() {
-    listener.cancel();
-    super.dispose();
+    checkIfLocationPermissionAllowed();
   }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //asked permission
-  // checkIfLocationPermissionAllowed(); kesalahan dikarenakan memanggil checkIfLocationPermissionAllowed di file main_screen.dart
-  //karena sebagai permission telat untuk meminta permission, karena map sudah terlanjut di load
-  // }
 
   @override
   Widget build(BuildContext context) {
     createActiveNearByDriverIconMarker();
-    return WillPopScope(
-      onWillPop: () async {
-        if (!openNavigationDrawer) {
-          openNavigationDrawer = true;
-          Provider.of<AppInfo>(context, listen: false).clearDropOffLocation();
-          setState(() {
-            markersSet.clear();
-            circlesSet.clear();
-            polyLineSet.clear();
-          });
 
-          return false;
-        } else {
-          final shouldPop = await showDialog<bool>(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('Do you want to exit and logout?'),
-                actionsAlignment: MainAxisAlignment.spaceBetween,
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      fAuth.signOut();
-                      Navigator.pop(context, true);
-                    },
-                    child: const Text('Yes'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context, false);
-                    },
-                    child: const Text('No'),
-                  ),
-                ],
-              );
-            },
-          );
-          return shouldPop!;
-        }
-      },
-      child: Scaffold(
-        key: sKey,
-        drawer: SizedBox(
-          width: 265,
-          child: Theme(
-            data: Theme.of(context).copyWith(
-              canvasColor: Colors.black,
-            ),
-            child: DrawerWidget(
-              name: userName,
-              email: userEmail,
-            ),
+    return Scaffold(
+      key: sKey,
+      drawer: Container(
+        width: 265,
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            canvasColor: Colors.black,
+          ),
+          child: DrawerWidget(
+            name: userName,
+            email: userEmail,
           ),
         ),
-        body: SafeArea(
-          child: Stack(
-            children: [
-              GoogleMap(
-                padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
-                mapType: MapType.normal,
-                myLocationEnabled: true,
-                zoomGesturesEnabled: true,
-                zoomControlsEnabled: true,
-                initialCameraPosition: _kGooglePlex,
-                polylines: polyLineSet,
-                markers: markersSet,
-                circles: circlesSet,
-                onMapCreated: (GoogleMapController controller) {
-                  _controllerGoogleMap.complete(controller);
-                  newGoogleMapController = controller;
+      ),
+      body: Stack(
+        children: [
+          GoogleMap(
+            padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
+            mapType: MapType.normal,
+            myLocationEnabled: true,
+            zoomGesturesEnabled: true,
+            zoomControlsEnabled: true,
+            initialCameraPosition: _kGooglePlex,
+            polylines: polyLineSet,
+            markers: markersSet,
+            circles: circlesSet,
+            onMapCreated: (GoogleMapController controller) {
+              _controllerGoogleMap.complete(controller);
+              newGoogleMapController = controller;
 
-                  //for black theme google map
-                  blackThemeGoogleMap();
+              //for black theme google map
+              blackThemeGoogleMap();
 
-                  setState(() {
-                    bottomPaddingOfMap = 240;
-                  });
+              setState(() {
+                bottomPaddingOfMap = 240;
+              });
 
-                  locateUserPosition();
-                },
-              ),
+              locateUserPosition();
+            },
+          ),
 
-              //custom hamburger button for drawer
-              Positioned(
-                top: 30,
-                left: 14,
-                child: GestureDetector(
-                  onTap: () {
-                    if (openNavigationDrawer) {
-                      sKey.currentState!.openDrawer();
-                    } else {
-                      // restart-refresh-minimize app programatically
-                      // SystemNavigator.pop();
-                      openNavigationDrawer = true;
-                      Provider.of<AppInfo>(context, listen: false).clearDropOffLocation();
-                      markersSet.clear();
-                      circlesSet.clear();
-                      polyLineSet.clear();
-                    }
-                  },
-                  child: CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    child: Icon(
-                      openNavigationDrawer ? Icons.menu : Icons.close,
-                      color: Colors.black54,
-                    ),
-                  ),
+          //custom hamburger button for drawer
+          Positioned(
+            top: 30,
+            left: 14,
+            child: GestureDetector(
+              onTap: () {
+                if (openNavigationDrawer) {
+                  sKey.currentState!.openDrawer();
+                } else {
+                  //restart-refresh-minimize app progmatically
+                  SystemNavigator.pop();
+                }
+              },
+              child: CircleAvatar(
+                backgroundColor: Colors.grey,
+                child: Icon(
+                  openNavigationDrawer ? Icons.menu : Icons.close,
+                  color: Colors.black54,
                 ),
               ),
+            ),
+          ),
 
-              //ui for searching location
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: AnimatedSize(
-                  curve: Curves.easeIn,
-                  duration: const Duration(milliseconds: 120),
-                  child: Container(
-                    height: searchLocationContainerHeight,
-                    decoration: const BoxDecoration(
-                      color: Colors.black87,
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(20),
-                        topLeft: Radius.circular(20),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                      child: Column(
+          //ui for searching location
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: AnimatedSize(
+              curve: Curves.easeIn,
+              duration: const Duration(milliseconds: 120),
+              child: Container(
+                height: searchLocationContainerHeight,
+                decoration: const BoxDecoration(
+                  color: Colors.black87,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(20),
+                    topLeft: Radius.circular(20),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                  child: Column(
+                    children: [
+                      //from
+                      Row(
                         children: [
-                          //from
-                          Stack(
+                          const Icon(
+                            Icons.add_location_alt_outlined,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(
+                            width: 12.0,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(children: [
-                                const Icon(
-                                  Icons.add_location_alt_outlined,
-                                  color: Colors.grey,
-                                ),
-                                const SizedBox(
-                                  width: 12.0,
-                                ),
-                                Expanded(
-                                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                  const Text(
-                                    'From',
-                                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                                  ),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Text(
-                                      Provider.of<AppInfo>(context).userPickUpLocation != null
-                                          ? Provider.of<AppInfo>(context).userPickUpLocation!.locationName!
-                                          : "Add pick up",
-                                      style: const TextStyle(color: Colors.grey, fontSize: 14),
-                                    ),
-                                  ),
-                                ])),
-                              ]),
+                              const Text(
+                                "From",
+                                style: TextStyle(color: Colors.grey, fontSize: 12),
+                              ),
+                              Text(
+                                Provider.of<AppInfo>(context).userPickUpLocation != null
+                                    ? (Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0, 24) + "..."
+                                    : "not getting address",
+                                style: const TextStyle(color: Colors.grey, fontSize: 14),
+                              ),
                             ],
-                          ),
-
-                          const SizedBox(height: 10.0),
-
-                          const Divider(
-                            height: 1,
-                            thickness: 1,
-                            color: Colors.grey,
-                          ),
-
-                          const SizedBox(height: 16.0),
-
-                          //to
-                          GestureDetector(
-                            onTap: () async {
-                              //go to search places screen
-
-                              var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c) => SearchPlacesScreen()));
-
-                              setState(() {
-                                openNavigationDrawer = false;
-                              });
-
-                              if (responseFromSearchScreen as String == "obtainedDropoff") {
-                                //draw routes - draw polyline
-                                await drawPolyLineFromOriginToDestination();
-                              }
-                            },
-                            child: Stack(
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.add_location_alt_outlined,
-                                      color: Colors.grey,
-                                    ),
-                                    const SizedBox(
-                                      width: 12.0,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          const Text(
-                                            "To",
-                                            style: TextStyle(color: Colors.grey, fontSize: 12),
-                                          ),
-                                          SingleChildScrollView(
-                                            child: Text(
-                                              Provider.of<AppInfo>(context).userDropOffLocation != null
-                                                  ? Provider.of<AppInfo>(context).userDropOffLocation!.locationName!
-                                                  : "Where to go?",
-                                              style: const TextStyle(color: Colors.grey, fontSize: 14),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          const SizedBox(height: 10.0),
-
-                          const Divider(
-                            height: 1,
-                            thickness: 1,
-                            color: Colors.grey,
-                          ),
-
-                          const SizedBox(height: 16.0),
-
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green, textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                            child: const Text(
-                              "Request a Ride",
-                            ),
                           ),
                         ],
                       ),
-                    ),
+
+                      const SizedBox(height: 10.0),
+
+                      const Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: Colors.grey,
+                      ),
+
+                      const SizedBox(height: 16.0),
+
+                      //to
+                      GestureDetector(
+                        onTap: () async {
+                          //go to search places screen
+                          var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c) => SearchPlacesScreen()));
+
+                          if (responseFromSearchScreen == "obtainedDropoff") {
+                            setState(() {
+                              openNavigationDrawer = false;
+                            });
+
+                            //draw routes - draw polyline
+                            await drawPolyLineFromOriginToDestination();
+                          }
+                        },
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.add_location_alt_outlined,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(
+                              width: 12.0,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "To",
+                                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                                ),
+                                Text(
+                                  Provider.of<AppInfo>(context).userDropOffLocation != null
+                                      ? Provider.of<AppInfo>(context).userDropOffLocation!.locationName!
+                                      : "Where to go?",
+                                  style: const TextStyle(color: Colors.grey, fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 10.0),
+
+                      const Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: Colors.grey,
+                      ),
+
+                      const SizedBox(height: 16.0),
+
+                      ElevatedButton(
+                        child: const Text(
+                          "Request a Ride",
+                        ),
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(primary: Colors.green, textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -552,7 +462,7 @@ class _MainScreenState extends State<MainScreen> {
 
     showDialog(
       context: context,
-      builder: (BuildContext context) => const ProgressDialog(
+      builder: (BuildContext context) => ProgressDialog(
         message: "Please wait...",
       ),
     );
@@ -565,28 +475,27 @@ class _MainScreenState extends State<MainScreen> {
     print(directionDetailsInfo!.ePoints);
 
     PolylinePoints pPoints = PolylinePoints();
-    List<PointLatLng> decodedPolyLinePointsResultList = pPoints.decodePolyline(directionDetailsInfo.ePoints!);
+    List<PointLatLng> decodedPolyLinePointsResultList = pPoints.decodePolyline(directionDetailsInfo!.ePoints!);
 
     pLineCoOrdinatesList.clear();
 
     if (decodedPolyLinePointsResultList.isNotEmpty) {
-      for (PointLatLng pointLatLng in decodedPolyLinePointsResultList) {
+      decodedPolyLinePointsResultList.forEach((PointLatLng pointLatLng) {
         pLineCoOrdinatesList.add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
-      }
+      });
     }
 
     polyLineSet.clear();
 
     setState(() {
       Polyline polyline = Polyline(
-        color: Colors.orange,
+        color: Colors.purpleAccent,
         polylineId: const PolylineId("PolylineID"),
         jointType: JointType.round,
         points: pLineCoOrdinatesList,
         startCap: Cap.roundCap,
         endCap: Cap.roundCap,
         geodesic: true,
-        width: 5,
       );
 
       polyLineSet.add(polyline);
@@ -609,7 +518,7 @@ class _MainScreenState extends State<MainScreen> {
       boundsLatLng = LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
     }
 
-    newGoogleMapController!.animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 50));
+    newGoogleMapController!.animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 65));
 
     Marker originMarker = Marker(
       markerId: const MarkerId("originID"),
@@ -654,32 +563,11 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  showDialogBox() => showCupertinoDialog<String>(
-        context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-          title: const Text('No Connection'),
-          content: const Text('Please check your internet connectivity'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context, 'Cancel');
-                setState(() => isAlertSet = false);
-                isDeviceConnected = await InternetConnection().hasInternetAccess;
-                if (!isDeviceConnected && isAlertSet == false) {
-                  showDialogBox();
-                  setState(() => isAlertSet = true);
-                }
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-
   initializeGeoFireListener() {
     Geofire.initialize("activeDrivers");
-    Geofire.queryAtLocation(userCurrentPosition!.latitude, userCurrentPosition!.longitude, 3)!.listen((map) {
-      print('cek map $map');
+
+    Geofire.queryAtLocation(userCurrentPosition!.latitude, userCurrentPosition!.longitude, 10)!.listen((map) {
+      print(map);
       if (map != null) {
         var callBack = map['callBack'];
 
@@ -687,6 +575,7 @@ class _MainScreenState extends State<MainScreen> {
         //longitude will be retrieved from map['longitude']
 
         switch (callBack) {
+          //whenever any driver become active/online
           case Geofire.onKeyEntered:
             ActiveNearbyAvailableDrivers activeNearbyAvailableDriver = ActiveNearbyAvailableDrivers();
             activeNearbyAvailableDriver.locationLatitude = map['latitude'];

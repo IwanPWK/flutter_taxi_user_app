@@ -678,7 +678,7 @@ class _MainScreenState extends State<MainScreen> {
 
   initializeGeoFireListener() {
     Geofire.initialize("activeDrivers");
-    Geofire.queryAtLocation(userCurrentPosition!.latitude, userCurrentPosition!.longitude, 3)!.listen((map) {
+    Geofire.queryAtLocation(userCurrentPosition!.latitude, userCurrentPosition!.longitude, 10)!.listen((map) {
       print('cek map $map');
       if (map != null) {
         var callBack = map['callBack'];
