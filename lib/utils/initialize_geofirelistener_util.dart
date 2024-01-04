@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -7,13 +8,13 @@ import '../models/active_nearby_available_drivers.dart';
 import 'display_active_drivers_util.dart';
 
 class InitializeGeofireListenerUtil {
+  static bool activeNearbyDriverKeysLoaded = false;
   // static BitmapDescriptor? activeNearbyIcon;
   // static void setIcon(BitmapDescriptor? icon) {
   //   activeNearbyIcon = icon;
   // }
 
-  static initializeGeoFireListener(Position? userCurrentPosition, bool activeNearbyDriverKeysLoaded, void Function(void Function()) setState,
-      Set<Marker> markersSet, Set<Circle> circlesSet, BitmapDescriptor? activeNearbyIcon) {
+  static initializeGeoFireListener(BuildContext context, Position? userCurrentPosition) {
     // InitializeGeofireListenerUtil DisplayActiveDriversOnUsersMap = InitializeGeofireListenerUtil();
     Geofire.initialize("activeDrivers");
     Geofire.queryAtLocation(userCurrentPosition!.latitude, userCurrentPosition.longitude, 3)!.listen((map) {
@@ -33,14 +34,14 @@ class InitializeGeofireListenerUtil {
             GeoFireAssistant.activeNearbyAvailableDriversList.add(activeNearbyAvailableDriver);
             if (activeNearbyDriverKeysLoaded == true) {
               // DisplayActiveDriversOnUsersMap.displayActiveDriversOnUsersMap(setState, markersSet, circlesSet);
-              DisplayActiveDrivers.displayActiveDriversOnUsersMap(setState, markersSet, circlesSet, activeNearbyIcon);
+              DisplayActiveDrivers.displayActiveDriversOnUsersMap(context);
             }
             break;
 
           //whenever any driver become non-active/offline
           case Geofire.onKeyExited:
             GeoFireAssistant.deleteOfflineDriverFromList(map['key']);
-            DisplayActiveDrivers.displayActiveDriversOnUsersMap(setState, markersSet, circlesSet, activeNearbyIcon);
+            DisplayActiveDrivers.displayActiveDriversOnUsersMap(context);
             break;
 
           //whenever driver moves - update driver location
@@ -50,18 +51,18 @@ class InitializeGeofireListenerUtil {
             activeNearbyAvailableDriver.locationLongitude = map['longitude'];
             activeNearbyAvailableDriver.driverId = map['key'];
             GeoFireAssistant.updateActiveNearbyAvailableDriverLocation(activeNearbyAvailableDriver);
-            DisplayActiveDrivers.displayActiveDriversOnUsersMap(setState, markersSet, circlesSet, activeNearbyIcon);
+            DisplayActiveDrivers.displayActiveDriversOnUsersMap(context);
             break;
 
           //display those online/active drivers on user's map
           case Geofire.onGeoQueryReady:
             activeNearbyDriverKeysLoaded = true;
-            DisplayActiveDrivers.displayActiveDriversOnUsersMap(setState, markersSet, circlesSet, activeNearbyIcon);
+            DisplayActiveDrivers.displayActiveDriversOnUsersMap(context);
             break;
         }
       }
 
-      setState(() {});
+      // setState(() {});
     });
   }
 }

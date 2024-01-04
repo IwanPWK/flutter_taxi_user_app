@@ -12,7 +12,7 @@ import 'package:flutter_taxi_user_app/assistants/assistant_methods.dart';
 import 'package:flutter_taxi_user_app/assistants/geofire_assistant.dart';
 import 'package:flutter_taxi_user_app/authentication_screen/login_screen.dart';
 import 'package:flutter_taxi_user_app/globals/global.dart';
-import 'package:flutter_taxi_user_app/info_handler/app_info.dart';
+import 'package:flutter_taxi_user_app/app_handler/app_info.dart';
 import 'package:flutter_taxi_user_app/main_screens/search_places_screen.dart';
 import 'package:flutter_taxi_user_app/models/active_nearby_available_drivers.dart';
 import 'package:flutter_taxi_user_app/widgets/drawer.dart';

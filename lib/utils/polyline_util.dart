@@ -3,32 +3,40 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
+// import '../app_handler/app_controller.dart';
+import '../app_handler/map_handler.dart';
 import '../assistants/assistant_methods.dart';
-import '../info_handler/app_info.dart';
+import '../app_handler/app_info.dart';
+import '../models/directions.dart';
 import '../widgets/progress_dialog.dart';
 
 class PolylineUtils {
+  static List<LatLng> pLineCoOrdinatesList = [];
   // static Function()? setState;
 
   static Future<void> drawPolyLineFromOriginToDestination(
     BuildContext context,
-    List<LatLng> pLineCoOrdinatesList,
-    Set<Polyline> polyLineSet,
-    Set<Marker> markersSet,
-    Set<Circle> circlesSet,
-    GoogleMapController? newGoogleMapController,
-    void Function({
-      required Set<Polyline> polyLines,
-      required Set<Marker> markers,
-      required Set<Circle> circles,
-    }) updateParentSets,
+    // Set<Polyline> polyLineSet,
+    // Set<Marker> markersSet,
+    // Set<Circle> circlesSet,
+    // GoogleMapController? newGoogleMapController,
+    // void Function({
+    //   required Set<Polyline> polyLines,
+    //   required Set<Marker> markers,
+    //   required Set<Circle> circles,
+    // }) updateParentSets,
   ) async {
     print('halloooo');
-    var originPosition = Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
-    var destinationPosition = Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
+
+    // MapHandler mapHandler = Provider.of<MapHandler>(context, listen: false);
+
+    Directions? originPosition = Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
+    Directions? destinationPosition = Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
+    print('bisakah $destinationPosition');
 
     var originLatLng = LatLng(originPosition!.locationLatitude!, originPosition.locationLongitude!);
     var destinationLatLng = LatLng(destinationPosition!.locationLatitude!, destinationPosition.locationLongitude!);
+    print('latLang $originLatLng, $destinationLatLng');
 
     showDialog(
       context: context,
@@ -39,7 +47,7 @@ class PolylineUtils {
 
     var directionDetailsInfo = await AssistantMethods.obtainOriginToDestinationDirectionDetails(originLatLng, destinationLatLng);
 
-    Navigator.pop(context);
+    if (context.mounted) Navigator.pop(context);
 
     print("These are points = ");
     print(directionDetailsInfo!.ePoints);
@@ -55,7 +63,7 @@ class PolylineUtils {
       }
     }
 
-    polyLineSet.clear();
+    if (context.mounted) Provider.of<MapHandler>(context, listen: false).clearPolyLineSet();
     print('lagiii');
 
     Polyline polyline = Polyline(
@@ -70,7 +78,7 @@ class PolylineUtils {
     );
     print('lagiii ku');
 
-    polyLineSet.add(polyline);
+    if (context.mounted) Provider.of<MapHandler>(context, listen: false).updatePolyLineSet(polyline);
     print('lagiii po');
 
     LatLngBounds boundsLatLng;
@@ -90,9 +98,11 @@ class PolylineUtils {
       boundsLatLng = LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
     }
 
-    print('lagiii la');
+    // print('lagiii la ${mapHandler.newGoogleMapController}');
 
-    newGoogleMapController!.animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 50));
+    Provider.of<MapHandler>(context, listen: false).cameraUpdateMethod(CameraUpdate.newLatLngBounds(boundsLatLng, 50));
+
+    // newGoogleMapController!.animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 50));
 
     print('lagiii ka');
 
@@ -114,8 +124,10 @@ class PolylineUtils {
     //   markersSet.add(originMarker);
     //   markersSet.add(destinationMarker);
     // });
-    markersSet.add(originMarker);
-    markersSet.add(destinationMarker);
+    // if (context.mounted) {
+    Provider.of<MapHandler>(context, listen: false).updateMarkersSet(originMarker);
+    Provider.of<MapHandler>(context, listen: false).updateMarkersSet(destinationMarker);
+    // }
 
     print('lagiii yu');
 
@@ -141,16 +153,19 @@ class PolylineUtils {
     //   circlesSet.add(originCircle);
     //   circlesSet.add(destinationCircle);
     // });
-    circlesSet.add(originCircle);
-    circlesSet.add(destinationCircle);
 
-    updateParentSets(
-      polyLines: polyLineSet,
-      markers: markersSet,
-      circles: circlesSet,
-    );
+    // if (context.mounted) {
+    Provider.of<MapHandler>(context, listen: false).updateCirclesSet(originCircle);
+    Provider.of<MapHandler>(context, listen: false).updateCirclesSet(destinationCircle);
+    // }
+
+    // updateParentSets(
+    //   polyLines: polyLineSet,
+    //   markers: markersSet,
+    //   circles: circlesSet,
+    // );
     // setState!();
 
-    print('Cek $updateParentSets');
+    print('lagiii Selesai');
   }
 }

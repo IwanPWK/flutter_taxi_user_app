@@ -1,37 +1,37 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_taxi_user_app/info_handler/app_info.dart';
+import 'package:flutter_taxi_user_app/app_handler/app_info.dart';
 
 import '../../utils/polyline_util.dart';
 import '../search_places_screen.dart';
 
 class RideBoxWidget extends StatefulWidget {
   bool openNavigationDrawer;
-  Set<Polyline> polyLineSet;
-  Set<Marker> markersSet;
-  Set<Circle> circlesSet;
-  GoogleMapController? newGoogleMapController;
+  // Set<Polyline> polyLineSet;
+  // Set<Marker> markersSet;
+  // Set<Circle> circlesSet;
+  // GoogleMapController? newGoogleMapController;
   // final void Function({
   //   required GoogleMapController updGoogleMapController,
   // }) updGoogleMapController;
-  final void Function({
-    required Set<Polyline> polyLines,
-    required Set<Marker> markers,
-    required Set<Circle> circles,
-  }) updateParentSets;
+
+  // final void Function({
+  //   required Set<Polyline> polyLines,
+  //   required Set<Marker> markers,
+  //   required Set<Circle> circles,
+  // }) updateParentSets;
   RideBoxWidget({
     Key? key,
     required this.openNavigationDrawer,
-    required this.polyLineSet,
-    required this.markersSet,
-    required this.circlesSet,
-    this.newGoogleMapController,
+    // required this.polyLineSet,
+    // required this.markersSet,
+    // required this.circlesSet,
+    // this.newGoogleMapController,
     // required this.updGoogleMapController,
-    required this.updateParentSets,
+    // required this.updateParentSets,
   }) : super(key: key);
 
   @override
@@ -40,7 +40,7 @@ class RideBoxWidget extends StatefulWidget {
 
 class _RideBoxWidgetState extends State<RideBoxWidget> {
   double searchLocationContainerHeight = 220;
-  List<LatLng> pLineCoOrdinatesList = [];
+  // List<LatLng> pLineCoOrdinatesList = [];
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -120,8 +120,7 @@ class _RideBoxWidgetState extends State<RideBoxWidget> {
                       //draw routes - draw polyline
                       print('draw polyline');
 
-                      await PolylineUtils.drawPolyLineFromOriginToDestination(context, pLineCoOrdinatesList, widget.polyLineSet, widget.markersSet,
-                          widget.circlesSet, widget.newGoogleMapController, widget.updateParentSets);
+                      await PolylineUtils.drawPolyLineFromOriginToDestination(context);
                       // PolylineUtils.setState = () {
                       //   setState(() {});
                       // };

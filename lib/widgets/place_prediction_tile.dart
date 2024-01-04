@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../assistants/request_assistant.dart';
 import '../globals/map_key.dart';
-import '../info_handler/app_info.dart';
+import '../app_handler/app_info.dart';
 import '../models/directions.dart';
 import '../models/predicted_places.dart';
 import 'progress_dialog.dart';

@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../globals/global.dart';
 import '../globals/map_key.dart';
-import '../info_handler/app_info.dart';
+import '../app_handler/app_info.dart';
 import '../models/direction_details_info.dart';
 import '../models/directions.dart';
 import '../models/user_model.dart';

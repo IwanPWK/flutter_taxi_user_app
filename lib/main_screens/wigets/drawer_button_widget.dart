@@ -1,24 +1,23 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
-import '../../info_handler/app_info.dart';
+import '../../app_handler/app_info.dart';
 
 class DrawerButtonWidget extends StatelessWidget {
   bool openNavigationDrawer;
-  Set<Polyline> polyLineSet;
-  Set<Marker> markersSet;
-  Set<Circle> circlesSet;
+  // Set<Polyline> polyLineSet;
+  // Set<Marker> markersSet;
+  // Set<Circle> circlesSet;
   GlobalKey<ScaffoldState> sKey;
 
   DrawerButtonWidget({
     Key? key,
     required this.openNavigationDrawer,
-    required this.polyLineSet,
-    required this.markersSet,
-    required this.circlesSet,
+    // required this.polyLineSet,
+    // required this.markersSet,
+    // required this.circlesSet,
     required this.sKey,
   }) : super(key: key);
 
@@ -36,9 +35,9 @@ class DrawerButtonWidget extends StatelessWidget {
             // SystemNavigator.pop();
             openNavigationDrawer = true;
             Provider.of<AppInfo>(context, listen: false).clearDropOffLocation();
-            markersSet.clear();
-            circlesSet.clear();
-            polyLineSet.clear();
+            // markersSet.clear();
+            // circlesSet.clear();
+            // polyLineSet.clear();
           }
         },
         child: CircleAvatar(

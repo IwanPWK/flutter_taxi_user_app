@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_taxi_user_app/info_handler/app_info.dart';
+import 'package:flutter_taxi_user_app/app_handler/app_info.dart';
 import 'package:provider/provider.dart';
+import 'app_handler/map_handler.dart';
 import 'splash_screen/splash_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -17,8 +18,18 @@ void main() async {
 
   runApp(
     MyApp(
-      child: ChangeNotifierProvider(
-        create: (context) => AppInfo(),
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => AppInfo(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => MapHandler(),
+          ),
+          // ChangeNotifierProvider(
+          //   create: (context) => AppInfo(),
+          // ),
+        ],
         child: MaterialApp(
           title: 'Drivers App',
           theme: ThemeData(

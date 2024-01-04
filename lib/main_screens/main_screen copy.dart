@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 import '../assistants/assistant_methods.dart';
 import '../assistants/geofire_assistant.dart';
 import '../globals/global.dart';
-import '../info_handler/app_info.dart';
+import '../app_handler/app_info.dart';
 import '../models/active_nearby_available_drivers.dart';
 import '../widgets/drawer.dart';
 import '../widgets/progress_dialog.dart';
