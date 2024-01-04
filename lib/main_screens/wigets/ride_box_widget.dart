@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_taxi_user_app/app_handler/app_info.dart';
 
 import '../../utils/polyline_util.dart';
+import '../../utils/save_ride_request_information.dart';
 import '../search_places_screen.dart';
 
 class RideBoxWidget extends StatefulWidget {
@@ -176,7 +177,7 @@ class _RideBoxWidgetState extends State<RideBoxWidget> {
                 ElevatedButton(
                   onPressed: () {
                     if (Provider.of<AppInfo>(context, listen: false).userDropOffLocation != null) {
-                      // saveRideRequestInformation();
+                      SaveRideRequestInformation.saveRideRequestInformationMethod(context);
                     } else {
                       Fluttertoast.showToast(msg: "Please select destination location");
                     }

@@ -28,15 +28,6 @@ import '../assistants/assistant_methods.dart';
 class LocatePosition {
   static locateUserPosition(
     BuildContext context,
-    // GoogleMapController? newGoogleMapController,
-    // Position? userCurrentPosition,
-    // String userName,
-    // String userEmail,
-    // bool activeNearbyDriverKeysLoaded,
-    // void Function(void Function()) setState,
-    // Set<Marker> markersSet,
-    // Set<Circle> circlesSet,
-    // BitmapDescriptor? activeNearbyIcon
   ) async {
     Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     if (!context.mounted) return;

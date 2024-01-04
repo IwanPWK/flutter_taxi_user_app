@@ -31,7 +31,7 @@ class _MainScreenState extends State<MainScreen> {
 
   GlobalKey<ScaffoldState> sKey = GlobalKey<ScaffoldState>();
 
-  var geoLocator = Geolocator();
+  // var geoLocator = Geolocator();
 
   // LocationPermission? _locationPermission; //asked permission
 
@@ -44,8 +44,17 @@ class _MainScreenState extends State<MainScreen> {
   String userEmail = "your Email";
 
   bool openNavigationDrawer = true;
-  BitmapDescriptor? activeNearbyIcon;
-  double bottomPaddingOfMap = 0;
+
+  void createActiveNearByDriverIconMarker() {
+    if (Provider.of<MapHandler>(context, listen: false).activeNearbyIcon == null) {
+      ImageConfiguration imageConfiguration = createLocalImageConfiguration(context, size: const Size(2, 2));
+      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/car.png").then((value) {
+        Provider.of<MapHandler>(context, listen: false).setActiveNearbyIcon(value);
+      });
+    }
+  }
+  // BitmapDescriptor? activeNearbyIcon;
+  // double bottomPaddingOfMap = 0;
   // static const CameraPosition _kGooglePlex = CameraPosition(
   //   target: LatLng(37.42796133580664, -122.085749655962),
   //   zoom: 14.4746,
@@ -74,11 +83,11 @@ class _MainScreenState extends State<MainScreen> {
   //   });
   // }
 
-  @override
-  void didChangeDependencies() {
-    Provider.of<MapHandler>(context).createActiveNearByDriverIconMarker(context);
-    super.didChangeDependencies();
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   Provider.of<MapHandler>(context).createActiveNearByDriverIconMarker(context);
+  //   super.didChangeDependencies();
+  // }
 
   // void updateSets({
   //   required Set<Polyline> polyLines,
@@ -126,18 +135,18 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Provider.of<MapHandler>(context).createActiveNearByDriverIconMarker(activeNearbyIcon, context);
+    createActiveNearByDriverIconMarker();
     // IconMarkerUtil.createActiveNearByDriverIconMarker(activeNearbyIcon, context);
     return WillPopScope(
       onWillPop: () async {
         if (!openNavigationDrawer) {
           openNavigationDrawer = true;
           Provider.of<AppInfo>(context, listen: false).clearDropOffLocation();
-          setState(() {
-            // markersSet.clear();
-            // circlesSet.clear();
-            // polyLineSet.clear();
-          });
+          // setState(() {
+          // markersSet.clear();
+          // circlesSet.clear();
+          // polyLineSet.clear();
+          // });
 
           return false;
         } else {

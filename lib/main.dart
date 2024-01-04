@@ -26,9 +26,6 @@ void main() async {
           ChangeNotifierProvider(
             create: (context) => MapHandler(),
           ),
-          // ChangeNotifierProvider(
-          //   create: (context) => AppInfo(),
-          // ),
         ],
         child: MaterialApp(
           title: 'Drivers App',

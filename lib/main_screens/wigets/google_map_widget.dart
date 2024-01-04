@@ -56,6 +56,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   @override
   Widget build(BuildContext context) {
     appController = Provider.of<MapHandler>(context, listen: false);
+    // print('tes10');
     print('tes10 ${Provider.of<MapHandler>(context).markersSet}');
     return GoogleMap(
       padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
@@ -64,14 +65,14 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
       zoomGesturesEnabled: true,
       zoomControlsEnabled: true,
       initialCameraPosition: _kGooglePlex,
-      polylines: Provider.of<MapHandler>(context).polyLineSet,
-      markers: Provider.of<MapHandler>(context).markersSet,
-      circles: Provider.of<MapHandler>(context).circlesSet,
+      polylines: Provider.of<MapHandler>(context, listen: false).polyLineSet,
+      markers: Provider.of<MapHandler>(context, listen: false).markersSet,
+      circles: Provider.of<MapHandler>(context, listen: false).circlesSet,
       onMapCreated: (GoogleMapController controller) {
         _controllerGoogleMap.complete(controller);
         appController.setGoogleMapController(controller);
         // newGoogleMapController = controller;
-        print('tes11');
+        print('tes11--------------------------------------------------------------------------------------------------');
         //for black theme google map
         ThemesMapUtil.blackThemeGoogleMap(appController.newGoogleMapController);
 

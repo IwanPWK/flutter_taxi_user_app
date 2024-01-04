@@ -15,18 +15,15 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
   List<PredictedPlaces> placesPredictedList = [];
 
   void findPlaceAutoCompleteSearch(String inputText) async {
-    Position cPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     if (inputText.length > 1) //2 or more than 2 input characters
     {
       String urlAutoCompleteSearch =
           "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$inputText&location=${cPosition.latitude}%2C${cPosition.longitude}&radius=500&key=$mapKey&components=country:ID";
 
-      var responseAutoCompleteSearch =
-          await RequestAssistant.receiveRequest(urlAutoCompleteSearch);
+      var responseAutoCompleteSearch = await RequestAssistant.receiveRequest(urlAutoCompleteSearch);
 
-      if (responseAutoCompleteSearch ==
-          "Error Occurred, Failed. No Response.") {
+      if (responseAutoCompleteSearch == "Error Occurred, Failed. No Response.") {
         return;
       }
       // print("latitude longitude ${cPosition.latitude}-${cPosition.longitude}");
@@ -35,9 +32,7 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
       if (responseAutoCompleteSearch["status"] == "OK") {
         var placePredictions = responseAutoCompleteSearch["predictions"];
 
-        var placePredictionsList = (placePredictions as List)
-            .map((jsonData) => PredictedPlaces.fromJson(jsonData))
-            .toList();
+        var placePredictionsList = (placePredictions as List).map((jsonData) => PredictedPlaces.fromJson(jsonData)).toList();
 
         setState(() {
           placesPredictedList = placePredictionsList;

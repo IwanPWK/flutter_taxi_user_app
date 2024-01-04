@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../models/predicted_places.dart';
+
 class MapHandler extends ChangeNotifier {
   Set<Polyline> polyLineSet = {};
   Set<Marker> markersSet = {};
@@ -10,6 +12,7 @@ class MapHandler extends ChangeNotifier {
   Position? userCurrentPosition;
   bool activeNearbyDriverKeysLoaded = false;
   BitmapDescriptor? activeNearbyIcon;
+  List<PredictedPlaces> placesPredictedList = [];
 
   void updatePolyLineSet(Polyline polyline) {
     polyLineSet.add(polyline);
@@ -27,17 +30,17 @@ class MapHandler extends ChangeNotifier {
   }
 
   void clearPolyLineSet() {
-    polyLineSet.clear;
+    polyLineSet.clear();
     notifyListeners();
   }
 
   void clearMarkersSet() {
-    markersSet.clear;
+    markersSet.clear();
     notifyListeners();
   }
 
   void clearCirclesSet() {
-    circlesSet.clear;
+    circlesSet.clear();
     notifyListeners();
   }
 
@@ -56,18 +59,33 @@ class MapHandler extends ChangeNotifier {
     notifyListeners();
   }
 
-  void createActiveNearByDriverIconMarker(BuildContext context) {
-    if (activeNearbyIcon == null) {
-      ImageConfiguration imageConfiguration = createLocalImageConfiguration(context, size: const Size(2, 2));
-      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/car.png").then((value) {
-        activeNearbyIcon = value;
-      });
-    }
+  void setActiveNearbyIcon(BitmapDescriptor value) {
+    activeNearbyIcon = value;
     notifyListeners();
   }
 
+  // void createActiveNearByDriverIconMarker(BuildContext context) {
+  //   if (activeNearbyIcon == null) {
+  //     ImageConfiguration imageConfiguration = createLocalImageConfiguration(context, size: const Size(2, 2));
+  //     BitmapDescriptor.fromAssetImage(imageConfiguration, "images/car.png").then((value) {
+  //       activeNearbyIcon = value;
+  //     });
+  //   }
+  //   notifyListeners();
+  // }
+
   void updateActiveNearbyDriverKeysLoaded(bool value) {
     activeNearbyDriverKeysLoaded = value;
+    notifyListeners();
+  }
+
+  void setPlacesPredictedList(List<PredictedPlaces> list) {
+    placesPredictedList = list;
+    notifyListeners();
+  }
+
+  void clearPlacesPredictedList() {
+    placesPredictedList.clear();
     notifyListeners();
   }
 }

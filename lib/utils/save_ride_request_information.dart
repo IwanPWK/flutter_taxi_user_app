@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
+import '../app_handler/map_handler.dart';
 import '../assistants/geofire_assistant.dart';
-import '../main_screens/restart_screen.dart';
+import '../splash_screen/restart_screen.dart';
 import '../models/active_nearby_available_drivers.dart';
 
 // class SaveRideRequestInformation extends StatefulWidget {
@@ -22,8 +24,7 @@ import '../models/active_nearby_available_drivers.dart';
 
 class SaveRideRequestInformation {
   static List<ActiveNearbyAvailableDrivers> onlineNearbyAvailableDriversList = [];
-  static Function()? clearSets;
-  static saveRideRequestInformation(BuildContext context) {
+  static saveRideRequestInformationMethod(BuildContext context) {
     // 1. save the RideRequest Information
     onlineNearbyAvailableDriversList = GeoFireAssistant.activeNearbyAvailableDriversList;
     searchNearestOnlineDrivers(context);
@@ -32,9 +33,11 @@ class SaveRideRequestInformation {
   static searchNearestOnlineDrivers(BuildContext context) {
     if (onlineNearbyAvailableDriversList.isEmpty) {
       // cancel or delete the RideRequest Information
-      clearSets!();
+
       Fluttertoast.showToast(msg: "No Online Nearest Driver Available. Please try again later.");
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => const RestartScreen()));
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => const RestartScreen()));
+      });
       return;
     }
   }
