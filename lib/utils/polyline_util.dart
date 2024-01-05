@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import '../app_handler/map_handler.dart';
 import '../assistants/assistant_methods.dart';
 import '../app_handler/app_info.dart';
+// import '../globals/global.dart';
+import '../models/direction_details_info.dart';
 import '../models/directions.dart';
 import '../widgets/progress_dialog.dart';
 
@@ -19,7 +21,7 @@ class PolylineUtils {
   ) async {
     print('halloooo');
 
-    // MapHandler mapHandler = Provider.of<MapHandler>(context, listen: false);
+    MapHandler mapHandler = Provider.of<MapHandler>(context, listen: false);
 
     Directions? originPosition = Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
     Directions? destinationPosition = Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
@@ -36,12 +38,13 @@ class PolylineUtils {
       ),
     );
 
-    var directionDetailsInfo = await AssistantMethods.obtainOriginToDestinationDirectionDetails(originLatLng, destinationLatLng);
+    DirectionDetailsInfo? directionDetailsInfo = await AssistantMethods.obtainOriginToDestinationDirectionDetails(originLatLng, destinationLatLng);
+    mapHandler.setTripDirectionDetailsInfo(directionDetailsInfo!);
 
     if (context.mounted) Navigator.pop(context);
 
     print("These are points = ");
-    print(directionDetailsInfo!.ePoints);
+    print(directionDetailsInfo.ePoints);
 
     PolylinePoints pPoints = PolylinePoints();
     List<PointLatLng> decodedPolyLinePointsResultList = pPoints.decodePolyline(directionDetailsInfo.ePoints!);
@@ -54,7 +57,7 @@ class PolylineUtils {
       }
     }
 
-    if (context.mounted) Provider.of<MapHandler>(context, listen: false).clearPolyLineSet();
+    mapHandler.clearPolyLineSet();
     print('lagiii');
 
     Polyline polyline = Polyline(

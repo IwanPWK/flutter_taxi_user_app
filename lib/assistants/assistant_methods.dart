@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_taxi_user_app/assistants/request_assistant.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../globals/global.dart';
@@ -68,7 +69,7 @@ class AssistantMethods {
     return directionDetailsInfo;
   }
 
-  static double calculateFareAmountFromOriginToDestination(DirectionDetailsInfo directionDetailsInfo) {
+  static String calculateFareAmountFromOriginToDestination(DirectionDetailsInfo directionDetailsInfo) {
     double timeTraveledFareAmountPerMinute = (directionDetailsInfo.durationValue! / 60) * 0.1;
     double distanceTraveledFareAmountPerKilometer = (directionDetailsInfo.distanceValue! / 1000) * 0.1;
 
@@ -77,6 +78,17 @@ class AssistantMethods {
     double localTotalFareAmount = totalFareAmount * 15000;
 
     // return double.parse(totalFareAmount.toStringAsFixed(1));
-    return double.parse(localTotalFareAmount.toStringAsFixed(0));
+    int roundedLocalTotalFareAmount = (localTotalFareAmount.round() / 100).round() * 100;
+    String displayFareAmount = convertToIdr(roundedLocalTotalFareAmount, 2);
+    return displayFareAmount;
+  }
+
+  static String convertToIdr(dynamic number, int decimalDigit) {
+    NumberFormat currencyFormatter = NumberFormat.currency(
+      locale: 'id',
+      symbol: 'Rp ',
+      decimalDigits: decimalDigit,
+    );
+    return currencyFormatter.format(number);
   }
 }

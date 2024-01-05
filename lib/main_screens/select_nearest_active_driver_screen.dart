@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:smooth_star_rating_nsafe/smooth_star_rating.dart';
 
+import '../app_handler/map_handler.dart';
+import '../assistants/assistant_methods.dart';
 import '../globals/global.dart';
 
 class SelectNearestActiveDriversScreen extends StatefulWidget {
@@ -14,6 +16,7 @@ class SelectNearestActiveDriversScreen extends StatefulWidget {
 class _SelectNearestActiveDriversScreenState extends State<SelectNearestActiveDriversScreen> {
   @override
   Widget build(BuildContext context) {
+    MapHandler mapHandler = Provider.of<MapHandler>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -29,7 +32,8 @@ class _SelectNearestActiveDriversScreenState extends State<SelectNearestActiveDr
           onPressed: () {
             //delete/remove the ride request from database
 
-            SystemNavigator.pop();
+            Navigator.pop(context);
+            dList.clear();
           },
         ),
       ),
@@ -76,21 +80,21 @@ class _SelectNearestActiveDriversScreenState extends State<SelectNearestActiveDr
                   ),
                 ],
               ),
-              trailing: const Column(
+              trailing: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "3",
-                    style: TextStyle(
+                    AssistantMethods.calculateFareAmountFromOriginToDestination(mapHandler.tripDirectionDetailsInfo!),
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 2,
                   ),
                   Text(
-                    "13 km",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54, fontSize: 12),
+                    mapHandler.tripDirectionDetailsInfo != null ? mapHandler.tripDirectionDetailsInfo!.durationText! : 'o min',
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black54, fontSize: 12),
                   ),
                 ],
               ),

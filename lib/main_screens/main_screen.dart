@@ -6,8 +6,10 @@ import 'package:provider/provider.dart';
 import '../app_handler/map_handler.dart';
 import '../globals/global.dart';
 import '../app_handler/app_info.dart';
+import '../globals/global.dart';
 import '../utils/check_network_util.dart';
 // import '../utils/icon_marker_util.dart';
+import '../utils/icon_marker_util.dart';
 import '../widgets/drawer.dart';
 import 'wigets/drawer_button_widget.dart';
 import 'wigets/google_map_widget.dart';
@@ -45,14 +47,14 @@ class _MainScreenState extends State<MainScreen> {
 
   bool openNavigationDrawer = true;
 
-  void createActiveNearByDriverIconMarker() {
-    if (Provider.of<MapHandler>(context, listen: false).activeNearbyIcon == null) {
-      ImageConfiguration imageConfiguration = createLocalImageConfiguration(context, size: const Size(2, 2));
-      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/car.png").then((value) {
-        Provider.of<MapHandler>(context, listen: false).setActiveNearbyIcon(value);
-      });
-    }
-  }
+  // void createActiveNearByDriverIconMarker() {
+  //   if (activeNearbyIcon == null) {
+  //     ImageConfiguration imageConfiguration = createLocalImageConfiguration(context, size: const Size(2, 2));
+  //     BitmapDescriptor.fromAssetImage(imageConfiguration, "images/car.png").then((value) {
+  //       setActiveNearbyIcon(value);
+  //     });
+  //   }
+  // }
   // BitmapDescriptor? activeNearbyIcon;
   // double bottomPaddingOfMap = 0;
   // static const CameraPosition _kGooglePlex = CameraPosition(
@@ -135,7 +137,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    createActiveNearByDriverIconMarker();
+    IconMarkerUtil.createActiveNearByDriverIconMarker(context);
     // IconMarkerUtil.createActiveNearByDriverIconMarker(activeNearbyIcon, context);
     return WillPopScope(
       onWillPop: () async {

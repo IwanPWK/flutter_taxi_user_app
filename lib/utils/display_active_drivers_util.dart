@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../app_handler/map_handler.dart';
 import '../assistants/geofire_assistant.dart';
+import '../globals/global.dart';
 import '../models/active_nearby_available_drivers.dart';
 
 class DisplayActiveDrivers {
@@ -22,7 +23,7 @@ class DisplayActiveDrivers {
       Marker marker = Marker(
         markerId: MarkerId("driver${eachDriver.driverId!}"),
         position: eachDriverActivePosition,
-        icon: Provider.of<MapHandler>(context, listen: false).activeNearbyIcon!,
+        icon: activeNearbyIcon!,
         rotation: 360,
       );
 

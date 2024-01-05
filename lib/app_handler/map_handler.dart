@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../models/direction_details_info.dart';
 import '../models/predicted_places.dart';
 
 class MapHandler extends ChangeNotifier {
@@ -10,9 +11,8 @@ class MapHandler extends ChangeNotifier {
   Set<Circle> circlesSet = {};
   GoogleMapController? newGoogleMapController;
   Position? userCurrentPosition;
-  bool activeNearbyDriverKeysLoaded = false;
-  BitmapDescriptor? activeNearbyIcon;
   List<PredictedPlaces> placesPredictedList = [];
+  DirectionDetailsInfo? tripDirectionDetailsInfo;
 
   void updatePolyLineSet(Polyline polyline) {
     polyLineSet.add(polyline);
@@ -59,10 +59,16 @@ class MapHandler extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setActiveNearbyIcon(BitmapDescriptor value) {
-    activeNearbyIcon = value;
+  setTripDirectionDetailsInfo(DirectionDetailsInfo info) {
+    tripDirectionDetailsInfo = info;
     notifyListeners();
+    // return tripDirectionDetailsInfo!;
   }
+
+  // void setActiveNearbyIcon(BitmapDescriptor value) {
+  //   activeNearbyIcon = value;
+  //   notifyListeners();
+  // }
 
   // void createActiveNearByDriverIconMarker(BuildContext context) {
   //   if (activeNearbyIcon == null) {
@@ -74,10 +80,10 @@ class MapHandler extends ChangeNotifier {
   //   notifyListeners();
   // }
 
-  void updateActiveNearbyDriverKeysLoaded(bool value) {
-    activeNearbyDriverKeysLoaded = value;
-    notifyListeners();
-  }
+  // void updateActiveNearbyDriverKeysLoaded(bool value) {
+  //   activeNearbyDriverKeysLoaded = value;
+  //   notifyListeners();
+  // }
 
   void setPlacesPredictedList(List<PredictedPlaces> list) {
     placesPredictedList = list;
