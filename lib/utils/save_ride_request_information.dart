@@ -1,11 +1,9 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
-
-import '../app_handler/map_handler.dart';
 import '../assistants/geofire_assistant.dart';
 import '../globals/global.dart';
+import '../main_screens/select_nearest_active_driver_screen.dart';
 import '../splash_screen/restart_screen.dart';
 import '../models/active_nearby_available_drivers.dart';
 
@@ -42,7 +40,9 @@ class SaveRideRequestInformation {
       });
       return;
     }
+    // active driver available
     await retrieveOnlineDriversInformation(onlineNearbyAvailableDriversList);
+    if (context.mounted) Navigator.push(context, MaterialPageRoute(builder: (c) => const SelectNearestActiveDriversScreen()));
   }
 
   static retrieveOnlineDriversInformation(List onlineNearestDriversList) async {
@@ -51,7 +51,6 @@ class SaveRideRequestInformation {
       await ref.child(onlineNearestDriversList[i].driverId.toString()).once().then((dataSnapshot) {
         var driverKeyInfo = dataSnapshot.snapshot.value;
         dList.add(driverKeyInfo);
-        print('Driver\'s Information ${dList.toList()}');
       });
     }
   }
