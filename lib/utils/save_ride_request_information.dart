@@ -1,9 +1,11 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import '../app_handler/map_handler.dart';
 import '../assistants/geofire_assistant.dart';
+import '../globals/global.dart';
 import '../splash_screen/restart_screen.dart';
 import '../models/active_nearby_available_drivers.dart';
 
@@ -30,7 +32,7 @@ class SaveRideRequestInformation {
     searchNearestOnlineDrivers(context);
   }
 
-  static searchNearestOnlineDrivers(BuildContext context) {
+  static searchNearestOnlineDrivers(BuildContext context) async {
     if (onlineNearbyAvailableDriversList.isEmpty) {
       // cancel or delete the RideRequest Information
 
@@ -39,6 +41,18 @@ class SaveRideRequestInformation {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => const RestartScreen()));
       });
       return;
+    }
+    await retrieveOnlineDriversInformation(onlineNearbyAvailableDriversList);
+  }
+
+  static retrieveOnlineDriversInformation(List onlineNearestDriversList) async {
+    DatabaseReference ref = FirebaseDatabase.instance.ref().child("drivers");
+    for (int i = 0; i < onlineNearestDriversList.length; i++) {
+      await ref.child(onlineNearestDriversList[i].driverId.toString()).once().then((dataSnapshot) {
+        var driverKeyInfo = dataSnapshot.snapshot.value;
+        dList.add(driverKeyInfo);
+        print('Driver\'s Information ${dList.toList()}');
+      });
     }
   }
 }
