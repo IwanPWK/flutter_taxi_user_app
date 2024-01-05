@@ -16,15 +16,6 @@ class PolylineUtils {
 
   static Future<void> drawPolyLineFromOriginToDestination(
     BuildContext context,
-    // Set<Polyline> polyLineSet,
-    // Set<Marker> markersSet,
-    // Set<Circle> circlesSet,
-    // GoogleMapController? newGoogleMapController,
-    // void Function({
-    //   required Set<Polyline> polyLines,
-    //   required Set<Marker> markers,
-    //   required Set<Circle> circles,
-    // }) updateParentSets,
   ) async {
     print('halloooo');
 
@@ -98,11 +89,7 @@ class PolylineUtils {
       boundsLatLng = LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
     }
 
-    // print('lagiii la ${mapHandler.newGoogleMapController}');
-
     Provider.of<MapHandler>(context, listen: false).cameraUpdateMethod(CameraUpdate.newLatLngBounds(boundsLatLng, 50));
-
-    // newGoogleMapController!.animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 50));
 
     print('lagiii ka');
 
@@ -120,14 +107,8 @@ class PolylineUtils {
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
     );
 
-    // setState(() {
-    //   markersSet.add(originMarker);
-    //   markersSet.add(destinationMarker);
-    // });
-    // if (context.mounted) {
     Provider.of<MapHandler>(context, listen: false).updateMarkersSet(originMarker);
     Provider.of<MapHandler>(context, listen: false).updateMarkersSet(destinationMarker);
-    // }
 
     print('lagiii yu');
 
@@ -149,22 +130,8 @@ class PolylineUtils {
       center: destinationLatLng,
     );
 
-    // setState(() {
-    //   circlesSet.add(originCircle);
-    //   circlesSet.add(destinationCircle);
-    // });
-
-    // if (context.mounted) {
     Provider.of<MapHandler>(context, listen: false).updateCirclesSet(originCircle);
     Provider.of<MapHandler>(context, listen: false).updateCirclesSet(destinationCircle);
-    // }
-
-    // updateParentSets(
-    //   polyLines: polyLineSet,
-    //   markers: markersSet,
-    //   circles: circlesSet,
-    // );
-    // setState!();
 
     print('lagiii Selesai');
   }
