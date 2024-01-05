@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../assistants/request_assistant.dart';
+import '../globals/global.dart';
 import '../globals/map_key.dart';
 import '../app_handler/app_info.dart';
 import '../models/directions.dart';

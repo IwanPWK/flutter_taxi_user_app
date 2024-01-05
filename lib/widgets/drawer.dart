@@ -4,16 +4,15 @@ import '../globals/global.dart';
 import '../splash_screen/splash_screen.dart';
 
 class DrawerWidget extends StatefulWidget {
-  String? name;
-  String? email;
-
-  DrawerWidget({super.key, this.name, this.email});
+  const DrawerWidget({super.key});
 
   @override
   State<DrawerWidget> createState() => _DrawerWidgetState();
 }
 
 class _DrawerWidgetState extends State<DrawerWidget> {
+  String userName = "your Name";
+  String userEmail = "your Email";
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -41,7 +40,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          widget.name.toString(),
+                          userModelCurrentInfo != null ? userModelCurrentInfo!.name! : userName,
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.grey,
@@ -52,7 +51,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                           height: 10,
                         ),
                         Text(
-                          widget.email.toString(),
+                          userModelCurrentInfo != null ? userModelCurrentInfo!.email! : userEmail,
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.grey,
@@ -119,8 +118,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           GestureDetector(
             onTap: () {
               fAuth.signOut();
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (c) => const SplashScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (c) => const SplashScreen()));
             },
             child: const ListTile(
               leading: Icon(

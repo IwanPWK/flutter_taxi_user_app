@@ -18,7 +18,7 @@ class _RestartScreenState extends State<RestartScreen> {
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
     });
     Provider.of<AppInfo>(context, listen: false).clearDropOffLocation();
     Provider.of<MapHandler>(context, listen: false).clearMarkersSet();

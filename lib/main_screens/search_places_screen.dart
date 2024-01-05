@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../assistants/request_assistant.dart';
+import '../globals/global.dart';
 import '../globals/map_key.dart';
 import '../models/predicted_places.dart';
 import '../widgets/place_prediction_tile.dart';

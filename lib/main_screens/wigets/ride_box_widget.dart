@@ -5,34 +5,14 @@ import 'package:provider/provider.dart';
 
 import 'package:flutter_taxi_user_app/app_handler/app_info.dart';
 
+import '../../globals/global.dart';
 import '../../utils/polyline_util.dart';
 import '../../utils/save_ride_request_information.dart';
 import '../search_places_screen.dart';
 
 class RideBoxWidget extends StatefulWidget {
-  bool openNavigationDrawer;
-  // Set<Polyline> polyLineSet;
-  // Set<Marker> markersSet;
-  // Set<Circle> circlesSet;
-  // GoogleMapController? newGoogleMapController;
-  // final void Function({
-  //   required GoogleMapController updGoogleMapController,
-  // }) updGoogleMapController;
-
-  // final void Function({
-  //   required Set<Polyline> polyLines,
-  //   required Set<Marker> markers,
-  //   required Set<Circle> circles,
-  // }) updateParentSets;
   RideBoxWidget({
     Key? key,
-    required this.openNavigationDrawer,
-    // required this.polyLineSet,
-    // required this.markersSet,
-    // required this.circlesSet,
-    // this.newGoogleMapController,
-    // required this.updGoogleMapController,
-    // required this.updateParentSets,
   }) : super(key: key);
 
   @override
@@ -112,9 +92,6 @@ class _RideBoxWidgetState extends State<RideBoxWidget> {
 
                     var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c) => SearchPlacesScreen()));
 
-                    setState(() {
-                      widget.openNavigationDrawer = false;
-                    });
                     print('Gesture Detector!');
                     print('cek respon $responseFromSearchScreen');
                     if (responseFromSearchScreen as String == "obtainedDropoff") {
