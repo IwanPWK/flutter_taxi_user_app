@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:smooth_star_rating_nsafe/smooth_star_rating.dart';
 
-import '../app_handler/map_handler.dart';
-import '../assistants/assistant_methods.dart';
 import '../globals/global.dart';
+import '../utils/fare_amount_util.dart';
 
 class SelectNearestActiveDriversScreen extends StatefulWidget {
   const SelectNearestActiveDriversScreen({super.key});
@@ -16,7 +14,6 @@ class SelectNearestActiveDriversScreen extends StatefulWidget {
 class _SelectNearestActiveDriversScreenState extends State<SelectNearestActiveDriversScreen> {
   @override
   Widget build(BuildContext context) {
-    MapHandler mapHandler = Provider.of<MapHandler>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -84,7 +81,7 @@ class _SelectNearestActiveDriversScreenState extends State<SelectNearestActiveDr
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    AssistantMethods.calculateFareAmountFromOriginToDestination(mapHandler.tripDirectionDetailsInfo!),
+                    FareAmount.getFareAmountAccordingToVehicleType(index),
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -93,7 +90,14 @@ class _SelectNearestActiveDriversScreenState extends State<SelectNearestActiveDr
                     height: 2,
                   ),
                   Text(
-                    mapHandler.tripDirectionDetailsInfo != null ? mapHandler.tripDirectionDetailsInfo!.durationText! : 'o min',
+                    tripDirectionDetailsInfo != null ? tripDirectionDetailsInfo!.distanceText! : '0 km',
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black54, fontSize: 12),
+                  ),
+                  const SizedBox(
+                    height: 2,
+                  ),
+                  Text(
+                    tripDirectionDetailsInfo != null ? tripDirectionDetailsInfo!.durationText! : '0 min',
                     style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black54, fontSize: 12),
                   ),
                 ],

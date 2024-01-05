@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../assistants/geofire_assistant.dart';
 import '../models/active_nearby_available_drivers.dart';

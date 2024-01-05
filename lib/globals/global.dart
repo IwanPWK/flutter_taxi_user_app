@@ -9,4 +9,4 @@ UserModel? userModelCurrentInfo;
 bool activeNearbyDriverKeysLoaded = false;
 BitmapDescriptor? activeNearbyIcon;
 List dList = []; //online-active drivers Information List
-
+DirectionDetailsInfo? tripDirectionDetailsInfo;

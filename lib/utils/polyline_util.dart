@@ -8,6 +8,7 @@ import '../app_handler/map_handler.dart';
 import '../assistants/assistant_methods.dart';
 import '../app_handler/app_info.dart';
 // import '../globals/global.dart';
+import '../globals/global.dart';
 import '../models/direction_details_info.dart';
 import '../models/directions.dart';
 import '../widgets/progress_dialog.dart';
@@ -39,12 +40,12 @@ class PolylineUtils {
     );
 
     DirectionDetailsInfo? directionDetailsInfo = await AssistantMethods.obtainOriginToDestinationDirectionDetails(originLatLng, destinationLatLng);
-    mapHandler.setTripDirectionDetailsInfo(directionDetailsInfo!);
+    tripDirectionDetailsInfo = directionDetailsInfo;
 
     if (context.mounted) Navigator.pop(context);
 
     print("These are points = ");
-    print(directionDetailsInfo.ePoints);
+    print(directionDetailsInfo!.ePoints);
 
     PolylinePoints pPoints = PolylinePoints();
     List<PointLatLng> decodedPolyLinePointsResultList = pPoints.decodePolyline(directionDetailsInfo.ePoints!);

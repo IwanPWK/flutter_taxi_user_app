@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import '../app_handler/map_handler.dart';
 import '../globals/global.dart';
 import '../app_handler/app_info.dart';
-import '../globals/global.dart';
 import '../utils/check_network_util.dart';
 // import '../utils/icon_marker_util.dart';
 import '../utils/icon_marker_util.dart';

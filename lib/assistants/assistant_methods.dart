@@ -2,7 +2,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_taxi_user_app/assistants/request_assistant.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../globals/global.dart';
@@ -13,6 +12,7 @@ import '../models/directions.dart';
 import '../models/user_model.dart';
 
 class AssistantMethods {
+  static String fareAmount = "";
   static Future<String> searchAddressFromGeographicCoOrdinates(Position position, context) async {
     String apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$mapKey";
     String humanReadableAddress = "";
@@ -60,35 +60,12 @@ class AssistantMethods {
     DirectionDetailsInfo directionDetailsInfo = DirectionDetailsInfo();
     directionDetailsInfo.ePoints = responseDirectionApi["routes"][0]["overview_polyline"]["points"];
 
-    directionDetailsInfo.distancText = responseDirectionApi["routes"][0]["legs"][0]["distance"]["text"];
+    directionDetailsInfo.distanceText = responseDirectionApi["routes"][0]["legs"][0]["distance"]["text"];
     directionDetailsInfo.distanceValue = responseDirectionApi["routes"][0]["legs"][0]["distance"]["value"];
 
     directionDetailsInfo.durationText = responseDirectionApi["routes"][0]["legs"][0]["duration"]["text"];
     directionDetailsInfo.durationValue = responseDirectionApi["routes"][0]["legs"][0]["duration"]["value"];
 
     return directionDetailsInfo;
-  }
-
-  static String calculateFareAmountFromOriginToDestination(DirectionDetailsInfo directionDetailsInfo) {
-    double timeTraveledFareAmountPerMinute = (directionDetailsInfo.durationValue! / 60) * 0.1;
-    double distanceTraveledFareAmountPerKilometer = (directionDetailsInfo.distanceValue! / 1000) * 0.1;
-
-    //USD
-    double totalFareAmount = timeTraveledFareAmountPerMinute + distanceTraveledFareAmountPerKilometer;
-    double localTotalFareAmount = totalFareAmount * 15000;
-
-    // return double.parse(totalFareAmount.toStringAsFixed(1));
-    int roundedLocalTotalFareAmount = (localTotalFareAmount.round() / 100).round() * 100;
-    String displayFareAmount = convertToIdr(roundedLocalTotalFareAmount, 2);
-    return displayFareAmount;
-  }
-
-  static String convertToIdr(dynamic number, int decimalDigit) {
-    NumberFormat currencyFormatter = NumberFormat.currency(
-      locale: 'id',
-      symbol: 'Rp ',
-      decimalDigits: decimalDigit,
-    );
-    return currencyFormatter.format(number);
   }
 }

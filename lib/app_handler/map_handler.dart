@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../models/direction_details_info.dart';
-import '../models/predicted_places.dart';
-
 class MapHandler extends ChangeNotifier {
   Set<Polyline> polyLineSet = {};
   Set<Marker> markersSet = {};
   Set<Circle> circlesSet = {};
   GoogleMapController? newGoogleMapController;
   Position? userCurrentPosition;
-  List<PredictedPlaces> placesPredictedList = [];
-  DirectionDetailsInfo? tripDirectionDetailsInfo;
+  // List<PredictedPlaces> placesPredictedList = [];
+  // DirectionDetailsInfo? tripDirectionDetailsInfo;
 
   void updatePolyLineSet(Polyline polyline) {
     polyLineSet.add(polyline);
@@ -59,11 +56,11 @@ class MapHandler extends ChangeNotifier {
     notifyListeners();
   }
 
-  setTripDirectionDetailsInfo(DirectionDetailsInfo info) {
-    tripDirectionDetailsInfo = info;
-    notifyListeners();
-    // return tripDirectionDetailsInfo!;
-  }
+  // setTripDirectionDetailsInfo(DirectionDetailsInfo info) {
+  //   tripDirectionDetailsInfo = info;
+  //   notifyListeners();
+  //   // return tripDirectionDetailsInfo!;
+  // }
 
   // void setActiveNearbyIcon(BitmapDescriptor value) {
   //   activeNearbyIcon = value;
@@ -85,13 +82,13 @@ class MapHandler extends ChangeNotifier {
   //   notifyListeners();
   // }
 
-  void setPlacesPredictedList(List<PredictedPlaces> list) {
-    placesPredictedList = list;
-    notifyListeners();
-  }
+  // void setPlacesPredictedList(List<PredictedPlaces> list) {
+  //   placesPredictedList = list;
+  //   notifyListeners();
+  // }
 
-  void clearPlacesPredictedList() {
-    placesPredictedList.clear();
-    notifyListeners();
-  }
+  // void clearPlacesPredictedList() {
+  //   placesPredictedList.clear();
+  //   notifyListeners();
+  // }
 }
